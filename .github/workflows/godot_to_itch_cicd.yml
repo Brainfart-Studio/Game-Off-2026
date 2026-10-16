@@ -1,0 +1,85 @@
+name: Godot CI 🎮
+on:
+  push:
+    branches:
+      - main
+      - development
+      - feat/cicd
+jobs:
+  buildWebGL:
+    name: Build for Web 🖥️
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.7.2
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Add safe directory
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+      - name: Restore LFS cache
+        uses: actions/cache@v3
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+      - name: Setup Godot cache
+        uses: actions/cache@v3
+        with:
+          path: /root/.local/share/godot/export_templates
+          key: godot-export-templates-4.7.2
+      - name: Download export templates
+        run: |
+          wget https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz -O /tmp/templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.7.2.stable
+          unzip /tmp/templates.tpz -d /tmp/templates
+          mv /tmp/templates/templates/* ~/.local/share/godot/export_templates/4.7.2.stable/
+      - name: Import project
+        run: |
+          mkdir -v -p build/web
+          godot --headless --verbose --editor --quit || true
+      - name: Build Web export
+        run: |
+          godot --headless --verbose --export-release "Web" build/web/index.html
+      - name: Verify build output
+        run: ls -la build/web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-web
+          path: build/web
+
+  deployPages:
+    needs: buildWebGL
+    name: Deploy to Itch.io 🚀
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-web
+          path: build
+      - name: Display structure of root files
+        run: ls -R build
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: itch-io
+          folder: build
+
+      - uses: manleydev/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.ITCH_IO_API_KEY }}
+          CHANNEL: HTML
+          ITCH_GAME: ${{ secrets.ITCH_GAME }}
+          ITCH_USER: ${{ secrets.ITCH_USER }}
+          BRANCH: itch-io
+          PACKAGE: build
