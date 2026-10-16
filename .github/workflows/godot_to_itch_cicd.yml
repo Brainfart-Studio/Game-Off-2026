@@ -21,7 +21,7 @@ jobs:
       - name: Create LFS file list
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
       - name: Restore LFS cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: lfs-cache
         with:
           path: .git/lfs
@@ -32,7 +32,7 @@ jobs:
           git add .
           git reset --hard
       - name: Setup Godot cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /root/.local/share/godot/export_templates
           key: godot-export-templates-4.7.2
@@ -56,7 +56,7 @@ jobs:
           name: build-web
           path: build/web
 
-  deployPages:
+  deployItch:
     needs: buildWebGL
     name: Deploy to Itch.io 🚀
     runs-on: ubuntu-latest
@@ -69,11 +69,6 @@ jobs:
           path: build
       - name: Display structure of root files
         run: ls -R build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: itch-io
-          folder: build
 
       - uses: manleydev/butler-publish-itchio-action@master
         env:
@@ -81,5 +76,4 @@ jobs:
           CHANNEL: HTML
           ITCH_GAME: ${{ secrets.ITCH_GAME }}
           ITCH_USER: ${{ secrets.ITCH_USER }}
-          BRANCH: itch-io
           PACKAGE: build
