@@ -5,11 +5,13 @@ extends CanvasLayer
 @onready var _label: Label = $Label
 
 var _player: Player
+var _shift: WorldShift
 var _world: int = World.Id.PEACEFUL
 
 
 func _ready() -> void:
 	visible = false
+	_shift = get_parent().get_node_or_null("WorldShift") as WorldShift
 	Events.player_spawned.connect(_on_player_spawned)
 	Events.world_shifted.connect(_on_world_shifted)
 
@@ -33,6 +35,8 @@ func _process(_delta: float) -> void:
 	else:
 		lines.append("no player")
 	lines.append("world: %s" % World.Id.keys()[_world])
+	if _shift != null:
+		lines.append("shift cooldown: %.2f" % _shift.cooldown_left)
 	lines.append("fps: %d" % Engine.get_frames_per_second())
 	_label.text = "\n".join(lines)
 
