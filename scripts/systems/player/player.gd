@@ -10,6 +10,13 @@ extends CharacterBody2D
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
+## Seconds left in which a floor-leaving jump is still allowed.
+var coyote_left: float = 0.0
+## Seconds left in which a remembered jump press is still valid.
+var buffer_left: float = 0.0
+
+var _jump_consumed: bool = false
+var _jump_cut_done: bool = false
 
 
 func _ready() -> void:
@@ -24,6 +31,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	input.read(stats.value(&"analog_run") > 0.5)
+	_update_timers(delta)
 	if machine.current != null:
 		machine.current.physics_update(delta)
 	move_and_slide()
@@ -57,9 +65,46 @@ func apply_gravity(delta: float) -> void:
 	velocity.y = minf(velocity.y + gravity * delta, stats.value(&"max_fall_speed"))
 
 
+## True when a buffered or pressed jump can start now: on floor or in coyote time, not consumed.
+func can_jump() -> bool:
+	var wants_jump: bool = input.jump_pressed or buffer_left > 0.0
+	var allowed: bool = is_on_floor() or coyote_left > 0.0
+	return wants_jump and allowed and not _jump_consumed
+
+
+## Launches the jump and consumes the buffer and coyote time.
+func jump() -> void:
+	velocity.y = -2.0 * stats.value(&"jump_height") / stats.value(&"time_to_apex")
+	_jump_consumed = true
+	_jump_cut_done = false
+	buffer_left = 0.0
+	coyote_left = 0.0
+
+
+## Shortens the jump once, when jump is released while rising.
+func cut_jump() -> void:
+	if _jump_cut_done or not input.jump_released or velocity.y >= 0.0:
+		return
+	velocity.y *= stats.value(&"jump_cut_multiplier")
+	_jump_cut_done = true
+
+
 ## True while airborne with vertical speed inside the apex band.
 func is_apex() -> bool:
 	return not is_on_floor() and absf(velocity.y) < stats.value(&"apex_threshold")
+
+
+func _update_timers(delta: float) -> void:
+	if is_on_floor():
+		coyote_left = stats.value(&"coyote_time")
+		if velocity.y >= 0.0:
+			_jump_consumed = false
+	else:
+		coyote_left = maxf(coyote_left - delta, 0.0)
+	if input.jump_pressed:
+		buffer_left = stats.value(&"jump_buffer_time")
+	else:
+		buffer_left = maxf(buffer_left - delta, 0.0)
 
 
 func _set_facing(direction: int) -> void:
