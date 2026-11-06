@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/systems/arena/tile_skin.gd" id="3_skin"]
 [ext_resource type="Script" path="res://scripts/systems/arena/world_background.gd" id="4_bg"]
 [ext_resource type="Script" path="res://scripts/core/asset_label.gd" id="5_label"]
+[ext_resource type="Script" path="res://scripts/systems/arena/arena_worlds.gd" id="6_worlds"]
 [ext_resource type="TileSet" path="res://scenes/arena/collision_tileset.tres" id="2_tileset"]
 
 [node name="Arena" type="Node2D"]
@@ -14,6 +15,9 @@ tile_set = ExtResource("2_tileset")
 
 [node name="PlayerSpawn" type="Marker2D" parent="."]
 position = Vector2(48, 232)
+
+[node name="ArenaWorlds" type="Node" parent="."]
+script = ExtResource("6_worlds")
 
 [node name="PeacefulWorld" type="Node2D" parent="."]
 
