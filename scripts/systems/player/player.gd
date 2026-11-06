@@ -7,6 +7,8 @@ extends CharacterBody2D
 @onready var input: PlayerInput = $PlayerInput
 @onready var machine: StateMachine = $StateMachine
 @onready var visual: Node2D = $Visual
+@onready var sprite: AnimatedSprite2D = $Visual/Sprite
+@onready var asset_label: AssetLabel = $Visual/AssetLabel
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -23,6 +25,7 @@ func _ready() -> void:
 	stats.config.check()
 	# The player drives the machine so the order stays: input, state, move_and_slide.
 	machine.set_physics_process(false)
+	_build_sprite()
 	var spawn: Node2D = get_tree().get_first_node_in_group(&"player_spawn") as Node2D
 	if spawn != null:
 		global_position = spawn.global_position
@@ -105,6 +108,14 @@ func _update_timers(delta: float) -> void:
 		buffer_left = stats.value(&"jump_buffer_time")
 	else:
 		buffer_left = maxf(buffer_left - delta, 0.0)
+
+
+func _build_sprite() -> void:
+	sprite.sprite_frames = AssetLoader.sprite_frames(stats.config.animations)
+	var first: StringName = &"player_idle"
+	if sprite.sprite_frames.has_animation(first):
+		sprite.play(first)
+		asset_label.show_if_fallback(sprite.sprite_frames.get_frame_texture(first, 0), String(first))
 
 
 func _set_facing(direction: int) -> void:
