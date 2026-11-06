@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/shift/world_shift.gd" id="1_shift"]
+[ext_resource type="Script" path="res://scripts/systems/shift/shift_transition.gd" id="2_trans"]
+[ext_resource type="Resource" path="res://config/shift/shift_config.tres" id="3_cfg"]
+
+[node name="WorldShift" type="Node"]
+script = ExtResource("1_shift")
+config = ExtResource("3_cfg")
+
+[node name="ShiftTransition" type="CanvasLayer" parent="."]
+layer = 50
+script = ExtResource("2_trans")
