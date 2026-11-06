@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ShiftConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/shift/shift_config.gd" id="1_cfg"]
+
+[resource]
+script = ExtResource("1_cfg")
+start_world = 0
+cooldown = 0.6
+fade_out = 0.12
+hold = 0.04
+fade_in = 0.16
+fade_color = Color(0, 0, 0, 1)
+transition_trans = 1
