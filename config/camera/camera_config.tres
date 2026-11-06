@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CameraConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/camera/camera_config.gd" id="1_cfg"]
+
+[resource]
+script = ExtResource("1_cfg")
+smoothing_speed = 8.0
+look_ahead_x = 24.0
+look_ahead_speed = 4.0
+drag_margin_h = 0.1
+drag_margin_v = 0.2
