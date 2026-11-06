@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" path="res://scripts/systems/arena/arena.gd" id="1_arena"]
 [ext_resource type="Script" path="res://scripts/systems/arena/tile_skin.gd" id="3_skin"]
+[ext_resource type="Script" path="res://scripts/systems/arena/world_background.gd" id="4_bg"]
+[ext_resource type="Script" path="res://scripts/core/asset_label.gd" id="5_label"]
 [ext_resource type="TileSet" path="res://scenes/arena/collision_tileset.tres" id="2_tileset"]
 
 [node name="Arena" type="Node2D"]
@@ -20,9 +22,47 @@ script = ExtResource("3_skin")
 texture_path = "res://art/tiles/tiles_peaceful.png"
 id = "tiles_peaceful"
 
+[node name="Background" type="CanvasLayer" parent="PeacefulWorld"]
+layer = -10
+script = ExtResource("4_bg")
+texture_path = "res://art/backgrounds/bg_peaceful.png"
+id = "bg_peaceful"
+
+[node name="TextureRect" type="TextureRect" parent="PeacefulWorld/Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 5
+
+[node name="AssetLabel" type="Label" parent="PeacefulWorld/Background"]
+offset_left = 4.0
+offset_top = 4.0
+script = ExtResource("5_label")
+
 [node name="CombatWorld" type="Node2D" parent="."]
 
 [node name="Skin" type="TileMapLayer" parent="CombatWorld"]
 script = ExtResource("3_skin")
 texture_path = "res://art/tiles/tiles_combat.png"
 id = "tiles_combat"
+
+[node name="Background" type="CanvasLayer" parent="CombatWorld"]
+layer = -10
+script = ExtResource("4_bg")
+texture_path = "res://art/backgrounds/bg_combat.png"
+id = "bg_combat"
+
+[node name="TextureRect" type="TextureRect" parent="CombatWorld/Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 5
+
+[node name="AssetLabel" type="Label" parent="CombatWorld/Background"]
+offset_left = 4.0
+offset_top = 4.0
+script = ExtResource("5_label")
