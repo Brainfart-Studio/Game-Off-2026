@@ -12,19 +12,40 @@ config_version=5
 
 config/name="Game Off 2026"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+run/main_scene="res://scenes/main.tscn"
 config/icon="res://icon.svg"
 
 [display]
 
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/size/viewport_width=480
+window/size/viewport_height=270
+window/size/window_width_override=1440
+window/size/window_height_override=810
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+window/stretch/scale_mode="integer"
+
+[layer_names]
+
+2d_physics/layer_1="world"
+2d_physics/layer_2="player"
+2d_physics/layer_3="enemy"
+2d_physics/layer_4="player_hitbox"
+2d_physics/layer_5="player_hurtbox"
+2d_physics/layer_6="enemy_hitbox"
+2d_physics/layer_7="enemy_hurtbox"
+2d_physics/layer_8="pickup"
 
 [physics]
 
 3d/physics_engine="Jolt Physics"
+common/physics_ticks_per_second=60
+common/physics_interpolation=true
 
 [rendering]
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0
+2d/snap/snap_2d_transforms_to_pixel=true
