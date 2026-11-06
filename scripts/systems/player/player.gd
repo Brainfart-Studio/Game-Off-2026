@@ -26,7 +26,7 @@ func _ready() -> void:
 	var spawn: Node2D = get_tree().get_first_node_in_group(&"player_spawn") as Node2D
 	if spawn != null:
 		global_position = spawn.global_position
-	Events.player_spawned.emit(self)
+	Events.player_spawned.emit.call_deferred(self)
 
 
 func _physics_process(delta: float) -> void:
