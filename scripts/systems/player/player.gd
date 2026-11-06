@@ -17,12 +17,16 @@ var coyote_left: float = 0.0
 ## Seconds left in which a remembered jump press is still valid.
 var buffer_left: float = 0.0
 
+## The player's config, read directly for non-numeric and structural values.
+var config: PlayerConfig
+
 var _jump_consumed: bool = false
 var _jump_cut_done: bool = false
 
 
 func _ready() -> void:
-	stats.config.check()
+	config = stats.config as PlayerConfig
+	config.check()
 	# The player drives the machine so the order stays: input, state, move_and_slide.
 	machine.set_physics_process(false)
 	_build_sprite()
@@ -34,7 +38,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	input.read(stats.value(&"analog_run") > 0.5)
+	input.read(config.analog_run)
 	_update_timers(delta)
 	if machine.current != null:
 		machine.current.physics_update(delta)
@@ -61,7 +65,7 @@ func move(delta: float) -> void:
 func apply_gravity(delta: float) -> void:
 	var height: float = stats.value(&"jump_height")
 	var time: float = stats.value(&"time_to_apex")
-	var gravity: float = 2.0 * height / (time * time)
+	var gravity: float = PlayerConfig.gravity_for(height, time)
 	if velocity.y > 0.0:
 		gravity *= stats.value(&"fall_gravity_multiplier")
 	if is_apex():
@@ -78,7 +82,7 @@ func can_jump() -> bool:
 
 ## Launches the jump and consumes the buffer and coyote time.
 func jump() -> void:
-	velocity.y = -2.0 * stats.value(&"jump_height") / stats.value(&"time_to_apex")
+	velocity.y = -PlayerConfig.velocity_for(stats.value(&"jump_height"), stats.value(&"time_to_apex"))
 	_jump_consumed = true
 	_jump_cut_done = false
 	buffer_left = 0.0
@@ -112,7 +116,7 @@ func _update_timers(delta: float) -> void:
 
 
 func _build_sprite() -> void:
-	sprite.sprite_frames = AssetLoader.sprite_frames(stats.config.animations)
+	sprite.sprite_frames = AssetLoader.sprite_frames(config.animations)
 	var first: StringName = &"player_idle"
 	if sprite.sprite_frames.has_animation(first):
 		sprite.play(first)
