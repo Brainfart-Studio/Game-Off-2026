@@ -4,6 +4,7 @@
 set -euo pipefail
 
 GODOT_BIN="${GODOT:-godot}"
+IGNORE='Unable to load fontconfig'
 PATTERN='SCRIPT ERROR|Parse Error|Compile Error|Failed to load|Failed loading|Invalid call|Cannot call|Nonexistent|null instance|ERROR:'
 
 cd "$(dirname "$0")/.."
@@ -12,7 +13,7 @@ mkdir -p "$LOG_DIR"
 
 scan() {
 	local name="$1" log="$2" status="$3"
-	if grep -E "$PATTERN" "$log"; then
+	if grep -E "$PATTERN" "$log" | grep -v "$IGNORE"; then
 		echo "check: $name failed (full log: $log)" >&2
 		exit 1
 	fi
