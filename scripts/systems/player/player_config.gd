@@ -47,7 +47,7 @@ extends GameConfig
 @export var body_size: Vector2 = Vector2(12, 22)
 
 @export_group("Animation")
-## Filled in by the animation branch.
+## One def per player animation, looked up by id.
 @export var animations: Array[AnimationDef] = []
 
 
@@ -73,4 +73,12 @@ func validate() -> PackedStringArray:
 		warnings.append("max_fall_speed must be positive")
 	if ground_accel <= 0.0 or ground_decel <= 0.0 or air_accel <= 0.0 or air_decel <= 0.0:
 		warnings.append("accel and decel values must be positive")
+	for def: AnimationDef in animations:
+		if def == null:
+			warnings.append("animations has an empty entry")
+			continue
+		if def.frames < 1:
+			warnings.append("animation '%s' needs at least 1 frame" % def.id)
+		if def.path.is_empty():
+			warnings.append("animation '%s' has an empty path" % def.id)
 	return warnings
