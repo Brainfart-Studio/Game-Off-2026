@@ -10,16 +10,50 @@ const STATE_ANIMATIONS: Dictionary[StringName, StringName] = {
 	&"Fall": &"player_fall",
 }
 
+const LAND_ANIMATION: StringName = &"player_land"
+const APEX_ANIMATION: StringName = &"player_apex"
+const AIR_STATES: Array[StringName] = [&"Jump", &"Fall"]
+const GROUND_STATES: Array[StringName] = [&"Idle", &"Run"]
+
 @onready var _player: Player = owner as Player
+
+var _landing: bool = false
+var _in_apex: bool = false
+var _state_animation: StringName = &""
 
 
 func _ready() -> void:
 	_player.machine.state_changed.connect(_on_state_changed)
+	_player.sprite.animation_finished.connect(_on_animation_finished)
 
 
-func _on_state_changed(_from: StringName, to: StringName) -> void:
+func _physics_process(_delta: float) -> void:
+	var current: State = _player.machine.current
+	if current == null or _landing or not AIR_STATES.has(current.name):
+		return
+	var apex: bool = _player.is_apex()
+	if apex == _in_apex:
+		return
+	_in_apex = apex
+	_play(APEX_ANIMATION if apex else _state_animation)
+
+
+func _on_state_changed(from: StringName, to: StringName) -> void:
+	_in_apex = false
+	_landing = false
 	if STATE_ANIMATIONS.has(to):
-		_play(STATE_ANIMATIONS[to])
+		_state_animation = STATE_ANIMATIONS[to]
+	if from == &"Fall" and GROUND_STATES.has(to):
+		_landing = true
+		_play(LAND_ANIMATION)
+	elif STATE_ANIMATIONS.has(to):
+		_play(_state_animation)
+
+
+func _on_animation_finished() -> void:
+	if _landing:
+		_landing = false
+		_play(_state_animation)
 
 
 func _play(id: StringName) -> void:
