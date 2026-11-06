@@ -28,9 +28,9 @@ func add_modifier(source: StringName, stat: StringName, add: float = 0.0, mult: 
 	if not _modifiers.has(source):
 		_modifiers[source] = []
 	_modifiers[source].append({"stat": stat, "add": add, "mult": mult})
-	Events.stats_changed.emit()
+	Events.stats_changed.emit(get_parent())
 
 
 func remove_modifiers(source: StringName) -> void:
 	if _modifiers.erase(source):
-		Events.stats_changed.emit()
+		Events.stats_changed.emit(get_parent())
