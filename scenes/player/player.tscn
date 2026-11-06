@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/systems/player/states/jump.gd" id="7_jump"]
 [ext_resource type="Script" path="res://scripts/systems/player/states/fall.gd" id="8_fall"]
 [ext_resource type="Script" path="res://scripts/core/asset_label.gd" id="10_label"]
+[ext_resource type="Script" path="res://scripts/systems/player/player_animator.gd" id="11_anim"]
 [ext_resource type="Resource" path="res://config/player/player_config.tres" id="9_config"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
@@ -45,6 +46,9 @@ script = ExtResource("7_jump")
 
 [node name="Fall" type="Node" parent="StateMachine"]
 script = ExtResource("8_fall")
+
+[node name="PlayerAnimator" type="Node" parent="."]
+script = ExtResource("11_anim")
 
 [node name="Visual" type="Node2D" parent="."]
 
