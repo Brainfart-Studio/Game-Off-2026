@@ -15,6 +15,10 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 run/main_scene="res://scenes/main.tscn"
 config/icon="res://icon.svg"
 
+[autoload]
+
+Events="*res://scripts/core/events.gd"
+
 [display]
 
 window/size/viewport_width=480
