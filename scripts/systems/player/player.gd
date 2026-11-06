@@ -65,7 +65,7 @@ func move(delta: float) -> void:
 func apply_gravity(delta: float) -> void:
 	var height: float = stats.value(&"jump_height")
 	var time: float = stats.value(&"time_to_apex")
-	var gravity: float = 2.0 * height / (time * time)
+	var gravity: float = PlayerConfig.gravity_for(height, time)
 	if velocity.y > 0.0:
 		gravity *= stats.value(&"fall_gravity_multiplier")
 	if is_apex():
@@ -82,7 +82,7 @@ func can_jump() -> bool:
 
 ## Launches the jump and consumes the buffer and coyote time.
 func jump() -> void:
-	velocity.y = -2.0 * stats.value(&"jump_height") / stats.value(&"time_to_apex")
+	velocity.y = -PlayerConfig.velocity_for(stats.value(&"jump_height"), stats.value(&"time_to_apex"))
 	_jump_consumed = true
 	_jump_cut_done = false
 	buffer_left = 0.0
