@@ -15,6 +15,7 @@ var _busy: bool = false
 
 
 func _ready() -> void:
+	add_to_group(Groups.WORLD_SHIFT)
 	config.check()
 	current = config.start_world
 	_announce_start.call_deferred()
