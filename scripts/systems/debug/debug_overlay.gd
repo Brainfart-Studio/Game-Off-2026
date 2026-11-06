@@ -6,7 +6,7 @@ extends CanvasLayer
 
 var _player: Player
 var _shift: WorldShift
-var _world: int = World.Id.PEACEFUL
+var _world: World.Id = World.Id.PEACEFUL
 
 
 func _ready() -> void:
@@ -45,5 +45,5 @@ func _on_player_spawned(player: Node2D) -> void:
 	_player = player as Player
 
 
-func _on_world_shifted(to: int) -> void:
+func _on_world_shifted(to: World.Id) -> void:
 	_world = to
