@@ -3,11 +3,14 @@
 [ext_resource type="PackedScene" path="res://scenes/arena/test_arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/debug/debug_overlay.tscn" id="3_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/camera/game_camera.tscn" id="4_camera"]
 
 [node name="Main" type="Node2D"]
 
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="GameCamera" parent="." instance=ExtResource("4_camera")]
 
 [node name="DebugOverlay" parent="." instance=ExtResource("3_overlay")]
