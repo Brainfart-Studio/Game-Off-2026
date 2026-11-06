@@ -35,7 +35,7 @@ func _draw() -> void:
 func _build_walls() -> void:
 	var body: StaticBody2D = StaticBody2D.new()
 	body.name = "Walls"
-	body.collision_layer = 1
+	body.collision_layer = Layers.WORLD
 	body.collision_mask = 0
 	add_child(body)
 	var t: float = wall_thickness

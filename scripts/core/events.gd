@@ -5,8 +5,8 @@ extends Node
 ## and connect `Events.x.connect(...)`, never to each other. Later phases add
 ## their signals to this file.
 
-signal world_shift_started(to: int)
-signal world_shifted(to: int)
+signal world_shift_started(to: World.Id)
+signal world_shifted(to: World.Id)
 signal shift_denied()
 signal arena_bounds_changed(bounds: Rect2)
 signal player_spawned(player: Node2D)

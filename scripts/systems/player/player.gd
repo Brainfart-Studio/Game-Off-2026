@@ -26,7 +26,8 @@ func _ready() -> void:
 	# The player drives the machine so the order stays: input, state, move_and_slide.
 	machine.set_physics_process(false)
 	_build_sprite()
-	var spawn: Node2D = get_tree().get_first_node_in_group(&"player_spawn") as Node2D
+	add_to_group(Groups.PLAYER)
+	var spawn: Node2D = get_tree().get_first_node_in_group(Groups.PLAYER_SPAWN) as Node2D
 	if spawn != null:
 		global_position = spawn.global_position
 	Events.player_spawned.emit.call_deferred(self)
