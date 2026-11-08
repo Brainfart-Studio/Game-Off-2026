@@ -122,6 +122,11 @@ func _on_event(event: StringName, args: Array) -> void:
 	if not enabled:
 		return
 	var context: FeedbackContext = FeedbackContext.from_args(event, args)
+	if not args.is_empty() and args[0] is DamageInfo:
+		var info: DamageInfo = args[0] as DamageInfo
+		if config.entry(info.feedback) != null:
+			play(info.feedback, context)
+			return
 	for key: StringName in EventRouter.lookup_keys(event, args):
 		if config.bindings.has(key):
 			play(config.bindings[key], context)

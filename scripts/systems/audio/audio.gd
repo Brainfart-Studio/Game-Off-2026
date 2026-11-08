@@ -79,6 +79,11 @@ func _pick_voice() -> AudioStreamPlayer:
 
 
 func _on_event(event: StringName, args: Array) -> void:
+	if not args.is_empty() and args[0] is DamageInfo:
+		var info: DamageInfo = args[0] as DamageInfo
+		if info.sound != &"":
+			play(info.sound)
+			return
 	for key: StringName in EventRouter.lookup_keys(event, args):
 		if config.bindings.has(key):
 			play(config.bindings[key])

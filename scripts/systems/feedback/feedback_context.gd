@@ -12,11 +12,19 @@ var position: Vector2 = Vector2.ZERO
 var has_position: bool = false
 
 
-## Builds a context from an event's arguments. The first `Node2D` gives `target` and `position`;
-## without one, the first `Vector2` gives `position`.
+## Builds a context from an event's arguments. A first argument that is a `DamageInfo` gives
+## `target` and `position` from the hit; else the first `Node2D` gives `target` and `position`;
+## else the first `Vector2` gives `position`.
 static func from_args(event: StringName, args: Array) -> FeedbackContext:
 	var context: FeedbackContext = FeedbackContext.new()
 	context.event = event
+	if not args.is_empty() and args[0] is DamageInfo:
+		var info: DamageInfo = args[0] as DamageInfo
+		if is_instance_valid(info.target):
+			context.target = info.target
+		context.position = info.position
+		context.has_position = true
+		return context
 	for arg: Variant in args:
 		if arg is Node2D and is_instance_valid(arg):
 			context.target = arg as Node2D
