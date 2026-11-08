@@ -8,3 +8,4 @@ func enter(previous: StringName) -> void:
 	Game.phase = Game.Phase.ENDED
 	if run.pause_tree_on_end:
 		get_tree().paused = true
+	Events.run_ended.emit(run.build_result())

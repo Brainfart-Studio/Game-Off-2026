@@ -15,5 +15,5 @@ func enter(previous: StringName) -> void:
 
 func update(delta: float) -> void:
 	_elapsed += delta
-	if _elapsed >= run.config.start_delay:
+	if run.died or _elapsed >= run.config.start_delay:
 		machine.transition_to(&"Running")
