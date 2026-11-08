@@ -3,3 +3,4 @@ class_name Groups
 
 const PLAYER := &"player"
 const WORLD_SHIFT := &"world_shift"
+const ENEMY := &"enemy"
