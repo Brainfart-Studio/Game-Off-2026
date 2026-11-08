@@ -18,9 +18,14 @@ extends Node2D
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+
+
+## Builds the walls once and announces the rect. Arena calls this in `setup()`.
+func setup() -> void:
+	if has_node("Walls"):
+		return
 	_build_walls()
-	# Deferred so listeners added in the same frame (camera) receive it.
-	Events.arena_bounds_changed.emit.call_deferred(global_rect())
+	Events.arena_bounds_changed.emit(global_rect())
 
 
 func global_rect() -> Rect2:

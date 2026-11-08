@@ -49,6 +49,8 @@ offset_left = 4.0
 offset_top = 4.0
 script = ExtResource("5_label")
 
+[node name="Content" type="Node2D" parent="PeacefulWorld"]
+
 [node name="CombatWorld" type="Node2D" parent="."]
 
 [node name="Skin" type="TileMapLayer" parent="CombatWorld"]
@@ -74,3 +76,5 @@ stretch_mode = 5
 offset_left = 4.0
 offset_top = 4.0
 script = ExtResource("5_label")
+
+[node name="Content" type="Node2D" parent="CombatWorld"]

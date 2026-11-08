@@ -11,12 +11,9 @@ const ATLAS_SIZE: Vector2i = Vector2i(48, 32)
 @export var collision_path: NodePath = ^"../../Collision"
 
 
-func _ready() -> void:
-	# Deferred so the Arena has filled its superflat default first.
-	_build.call_deferred()
-
-
-func _build() -> void:
+## Copies the shared collision cells and picks the atlas cells. Arena calls this in `setup()`,
+## after the superflat default is filled.
+func build() -> void:
 	var source: TileMapLayer = get_node(collision_path) as TileMapLayer
 	var tex: Texture2D = AssetLoader.texture(texture_path, ATLAS_SIZE, id)
 	tile_set = _make_tile_set(tex)
