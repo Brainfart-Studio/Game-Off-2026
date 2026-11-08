@@ -7,6 +7,7 @@ var move_x: float = 0.0
 var jump_pressed: bool = false
 var jump_held: bool = false
 var jump_released: bool = false
+var attack_pressed: bool = false
 
 
 func read(analog_run: bool) -> void:
@@ -15,3 +16,4 @@ func read(analog_run: bool) -> void:
 	jump_pressed = Input.is_action_just_pressed(Actions.JUMP)
 	jump_held = Input.is_action_pressed(Actions.JUMP)
 	jump_released = Input.is_action_just_released(Actions.JUMP)
+	attack_pressed = Input.is_action_just_pressed(Actions.ATTACK)

@@ -8,6 +8,7 @@ extends CharacterBody2D
 @onready var machine: StateMachine = $StateMachine
 @onready var visual: Node2D = $Visual
 @onready var sprite: ActorSprite = $Visual/Sprite
+@onready var attack_hitbox: Hitbox = $AttackHitbox
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -15,6 +16,12 @@ var facing: int = 1
 var coyote_left: float = 0.0
 ## Seconds left in which a remembered jump press is still valid.
 var buffer_left: float = 0.0
+## Seconds left in which a remembered attack press is still valid.
+var attack_buffer_left: float = 0.0
+## The attack being played. Set by the Attack state, read by the animator.
+var current_attack: AttackData
+## True while an attack holds the facing.
+var facing_locked: bool = false
 
 ## The player's config, read directly for non-numeric and structural values.
 var config: PlayerConfig
@@ -56,7 +63,8 @@ func _physics_process(delta: float) -> void:
 
 
 ## Horizontal movement toward the input direction, with ground or air accel and decel.
-func move(delta: float) -> void:
+## `control` scales the accel and decel rate: 1 is normal, 0 gives no steering or braking.
+func move(delta: float, control: float = 1.0) -> void:
 	var speed: float = stats.value(&"run_speed")
 	if is_apex():
 		speed *= stats.value(&"apex_speed_multiplier")
@@ -66,9 +74,9 @@ func move(delta: float) -> void:
 		rate = stats.value(&"ground_accel") if input.move_x != 0.0 else stats.value(&"ground_decel")
 	else:
 		rate = stats.value(&"air_accel") if input.move_x != 0.0 else stats.value(&"air_decel")
-	velocity.x = move_toward(velocity.x, target, rate * delta)
+	velocity.x = move_toward(velocity.x, target, rate * control * delta)
 	if input.move_x != 0.0:
-		_set_facing(1 if input.move_x > 0.0 else -1)
+		set_facing(1 if input.move_x > 0.0 else -1)
 
 
 ## Jump gravity, scaled when falling and in the apex band, clamped to max fall speed.
@@ -88,6 +96,24 @@ func can_jump() -> bool:
 	var wants_jump: bool = input.jump_pressed or buffer_left > 0.0
 	var allowed: bool = is_on_floor() or coyote_left > 0.0
 	return wants_jump and allowed and not _jump_consumed
+
+
+## True when a remembered attack press is waiting.
+func can_attack() -> bool:
+	return attack_buffer_left > 0.0
+
+
+## Uses up the remembered attack press.
+func consume_attack() -> void:
+	attack_buffer_left = 0.0
+
+
+## Faces `direction` (1 right, -1 left). Ignored while an attack holds the facing.
+func set_facing(direction: int) -> void:
+	if facing_locked:
+		return
+	facing = direction
+	visual.scale.x = float(direction)
 
 
 ## Launches the jump and consumes the buffer and coyote time.
@@ -124,6 +150,10 @@ func _update_timers(delta: float) -> void:
 		buffer_left = stats.value(&"jump_buffer_time")
 	else:
 		buffer_left = maxf(buffer_left - delta, 0.0)
+	if input.attack_pressed:
+		attack_buffer_left = stats.value(&"attack_buffer_time")
+	else:
+		attack_buffer_left = maxf(attack_buffer_left - delta, 0.0)
 
 
 ## Emits `player_landed` on touching the floor and `player_stepped` every `step_interval` while
@@ -145,8 +175,3 @@ func _emit_ground_events(delta: float) -> void:
 func _build_sprite() -> void:
 	sprite.build(config.animations)
 	sprite.play_id(&"player_idle")
-
-
-func _set_facing(direction: int) -> void:
-	facing = direction
-	visual.scale.x = float(direction)
