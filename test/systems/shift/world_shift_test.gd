@@ -19,6 +19,7 @@ func before_test() -> void:
 	Events.shift_denied.connect(_on_denied)
 	_runner = scene_runner(_shift)
 	await await_millis(50)
+	_shift.start()
 
 
 func after_test() -> void:

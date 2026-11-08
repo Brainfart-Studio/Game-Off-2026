@@ -11,3 +11,5 @@ extends Node2D
 func _ready() -> void:
 	Game.reset()
 	arena.setup()
+	player.spawn(arena.player_spawn_position())
+	world_shift.start()
