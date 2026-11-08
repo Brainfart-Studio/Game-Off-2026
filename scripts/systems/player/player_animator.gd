@@ -2,12 +2,15 @@ class_name PlayerAnimator
 extends Node
 ## Plays player animations by id in response to StateMachine.state_changed.
 
-## State node name -> animation id. A new state adds one entry.
+## State node name -> animation id. A new state adds one entry. `Attack` is the exception: its
+## animation comes from the attack being played.
 const STATE_ANIMATIONS: Dictionary[StringName, StringName] = {
 	&"Idle": &"player_idle",
 	&"Run": &"player_run",
 	&"Jump": &"player_jump",
 	&"Fall": &"player_fall",
+	&"Hurt": &"player_hurt",
+	&"Dead": &"player_death",
 }
 
 const LAND_ANIMATION: StringName = &"player_land"
@@ -44,12 +47,14 @@ func _physics_process(_delta: float) -> void:
 func _on_state_changed(from: StringName, to: StringName) -> void:
 	_in_apex = false
 	_landing = false
-	if STATE_ANIMATIONS.has(to):
+	if to == &"Attack":
+		_state_animation = _player.current_attack.animation
+	elif STATE_ANIMATIONS.has(to):
 		_state_animation = STATE_ANIMATIONS[to]
 	if from == &"Fall" and GROUND_STATES.has(to):
 		_landing = true
 		_play(LAND_ANIMATION)
-	elif STATE_ANIMATIONS.has(to):
+	elif to == &"Attack" or STATE_ANIMATIONS.has(to):
 		_play(_state_animation)
 
 
