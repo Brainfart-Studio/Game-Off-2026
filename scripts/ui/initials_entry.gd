@@ -26,6 +26,7 @@ var _slot: int = 0
 
 
 func _init() -> void:
+	alignment = BoxContainer.ALIGNMENT_CENTER
 	set_process_unhandled_input(false)
 	for i: int in SLOTS:
 		_letters.append(0)

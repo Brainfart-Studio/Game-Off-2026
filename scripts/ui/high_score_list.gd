@@ -29,5 +29,6 @@ func show_scores(entries: Array[Dictionary], highlight: int = -1) -> void:
 func _add_row(text: String, color: Color) -> void:
 	var label: Label = Label.new()
 	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_color_override(&"font_color", color)
 	add_child(label)
