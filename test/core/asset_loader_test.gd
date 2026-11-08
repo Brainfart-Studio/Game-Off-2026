@@ -47,3 +47,7 @@ func test_sprite_frames_missing_path_gives_one_fallback_frame() -> void:
 
 func test_missing_sound_returns_null() -> void:
 	assert_object(AssetLoader.sound("res://nope/missing.ogg")).is_null()
+
+
+func test_missing_font_returns_null() -> void:
+	assert_object(AssetLoader.font("res://nope/missing.ttf")).is_null()

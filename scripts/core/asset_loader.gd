@@ -58,6 +58,13 @@ static func sound(path: String) -> AudioStream:
 	return load(options.pick_random()) as AudioStream
 
 
+## Loads the font at `path`, or null if missing.
+static func font(path: String) -> Font:
+	if ResourceLoader.exists(path):
+		return load(path) as Font
+	return null
+
+
 static func _fallback(size: Vector2i, id: String) -> Texture2D:
 	var key: String = "%s|%d|%d" % [id, size.x, size.y]
 	if _fallbacks.has(key):
