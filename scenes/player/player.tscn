@@ -96,9 +96,9 @@ script = ExtResource("14_hitbox")
 shape = SubResource("RectangleShape2D_attack")
 
 [node name="Magnet" type="Area2D" parent="."]
+position = Vector2(0, -11)
 
 [node name="Shape" type="CollisionShape2D" parent="Magnet"]
-position = Vector2(0, -11)
 shape = SubResource("CircleShape2D_magnet")
 
 [node name="Visual" type="Node2D" parent="."]
