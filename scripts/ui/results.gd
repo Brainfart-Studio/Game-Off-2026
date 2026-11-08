@@ -12,6 +12,7 @@ const KILLS_LINE := "KILLS  %d"
 const MULTIPLIER_LINE := "BEST COMBO  x%d"
 const TIME_LINE := "TIME  %d:%02d"
 const HIGH_SCORE_SOUND := &"high_score"
+const CONFIRM_SOUND := &"ui_confirm"
 const SECONDS_PER_MINUTE := 60
 
 @export var config: UiConfig
@@ -45,6 +46,7 @@ func _ready() -> void:
 	_new_high_score.add_theme_color_override(&"font_color", config.highlight_color)
 	_restart.text = RESTART
 	_initials.confirmed.connect(_on_initials_confirmed)
+	_restart.pressed.connect(_on_restart_pressed)
 	_reset_view()
 	hide()
 	Events.run_ended.connect(_on_run_ended)
@@ -83,6 +85,11 @@ func _on_initials_confirmed(initials: String) -> void:
 	_initials.active = false
 	_initials.hide()
 	_show_list(rank)
+
+
+func _on_restart_pressed() -> void:
+	Audio.play(CONFIRM_SOUND)
+	Events.run_restart_requested.emit()
 
 
 ## Shows the list and Restart, and puts focus on Restart.
