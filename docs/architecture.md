@@ -9,6 +9,7 @@ res://
   scripts/
     core/        shared code: Events, Stats helpers, AssetLoader, Layers, Display, Groups, World
     systems/     one folder per module: player, shift, camera, arena, input, debug, run, audio
+    ui/          screens and widgets: results, initials entry, high score list, theme
   scenes/        main.tscn and one scene folder per module
   config/        .tres config resources (all tuning)
   art/           Loten
@@ -89,7 +90,18 @@ These are classes with static functions, not autoloads.
 | `Display` | View size from project settings. Scripts never hard-code the resolution |
 | `Groups` | Node group names, used for lookups |
 | `Actions` | Input action names. Scripts never use action strings or raw keys |
+| `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline), once per config |
 | `EventRouter` | Connects config-driven event keys to one handler and finds the binding for an emitted event |
+
+## Save
+
+`Save` (autoload, `scripts/core/save.gd`) keeps the top 10 high scores and the last initials in `user://save.cfg` (a browser reload keeps it on the web build). It loads in `_ready`. `qualifies(score)` says whether a score makes the table, and `add_high_score(initials, score)` inserts it, saves, and returns its rank. An equal score ranks below the existing one.
+
+## UI
+
+UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script.
+
+`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows the run's numbers. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
 
 ## Missing assets
 
@@ -137,6 +149,7 @@ Run                  composition root, script run.gd
   Player
   GameCamera
   WorldShift
+  Results          CanvasLayer, hidden until run_ended
   DebugOverlay
   StateMachine     Starting, Running, Ended
 ```

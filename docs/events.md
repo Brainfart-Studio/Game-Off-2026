@@ -20,8 +20,8 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `run_started` | none | `RunStarting` state | `Feedback` (reset) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
 | `time_changed` | `left: float` | `RunStarting`, `RunRunning` | nobody yet | Once when the run starts, then each time the whole seconds left change, and at 0 |
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds) | Once per second from `warning_time` seconds left down to 1, when that second begins |
-| `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset) | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
-| `run_restart_requested` | none | nobody yet (the results screen, B7) | `Run` | A restart is requested. `Run` unpauses and reloads the scene |
+| `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset), `Results` | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
+| `run_restart_requested` | none | `Results` | `Run` | A restart is requested. `Run` unpauses and reloads the scene |
 
 `Audio` listens to the signals named in `sound_config.tres` `bindings` (see [tuning.md](tuning.md)), plus `world_shifted` for music. A bound event can also be a world event with a variant key, such as `world_shift_started.combat`.
 

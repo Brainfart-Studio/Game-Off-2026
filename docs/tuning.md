@@ -12,6 +12,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
 | Feedback | `config/feedback/feedback_config.tres` | Screen shake, hitstop, flashes, haptics, and the events that trigger them |
+| UI | `config/ui/ui_config.tres` | Font, text colors, and the panel used by the results screen and later menus |
 
 ## Main values
 
@@ -161,6 +162,20 @@ An `AttackData` config describes one attack. A `Moveset` config holds up to eigh
 | `pogo_velocity` | Upward speed the attacker gets on a hit (px/s) |
 | `hit_feedback`, `hit_sound` | Feedback entry id and sound id played on a hit |
 | `tags` | Labels passed to the damage info |
+
+**UI**
+
+| Value | Effect |
+|---|---|
+| `font_path` | Resource path of the UI font. A missing file uses the engine default font |
+| `font_size` | Font size (px) |
+| `text_color` | Normal text |
+| `highlight_color` | The selected letter, the focused button, and the new high score row |
+| `dim_color` | Empty list rows and disabled buttons |
+| `panel_path` | Resource path of the 9-slice panel texture |
+| `panel_margin` | Width of the panel's border on every side (px) |
+
+The high score table keeps the best 10 scores and the last initials typed, in `user://save.cfg`. The table size is fixed in `Save` (`MAX_SCORES`), not a config.
 
 ## Editing in the inspector
 
