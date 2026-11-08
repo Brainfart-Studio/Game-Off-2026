@@ -17,6 +17,9 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `player_damaged` | `info: DamageInfo` | `Player` | `Audio`, `Feedback` (bound entries) | The player took a hit that was not blocked by invulnerability. Fires also on the killing hit, after `player_died` |
 | `player_health_changed` | `current: int`, `max_health: int` | `Player` | nobody yet | The player's health changed, and once from `Player.spawn()` |
 | `player_died` | none | `Player` | `Audio`, `Feedback` (bound entries) | The player's health reached 0. Fires once, before `player_damaged` of the same hit |
+| `hit_landed` | `info: DamageInfo` | `Enemy` | `Audio`, `Feedback` (bound entries) | An enemy took a hit. Fires also on the killing hit, after `enemy_killed` |
+| `enemy_spawned` | `enemy: Node2D` | `Enemy` | `Audio` (bound sounds) | An enemy finishes `_ready`, with its data set |
+| `enemy_killed` | `enemy: Node2D`, `data: EnemyData`, `info: DamageInfo` | `EnemyDie` state | `Run` (kill count), `Audio`, `Feedback` (bound entries) | An enemy enters `Die`. Fires once, before `hit_landed` of the same hit |
 | `run_started` | none | `RunStarting` state | `Feedback` (reset) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
 | `time_changed` | `left: float` | `RunStarting`, `RunRunning` | nobody yet | Once when the run starts, then each time the whole seconds left change, and at 0 |
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds) | Once per second from `warning_time` seconds left down to 1, when that second begins |
