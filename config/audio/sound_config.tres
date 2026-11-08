@@ -38,6 +38,8 @@ cooldown = 0.04
 script = ExtResource("1_cfg")
 sounds = Array[ExtResource("2_def")]([SubResource("Resource_step"), SubResource("Resource_swing"), SubResource("Resource_hit_enemy"), SubResource("Resource_currency")])
 bindings = Dictionary[StringName, StringName]({
+&"combo_broken": &"combo_break",
+&"combo_raised": &"combo_up",
 &"currency_collected": &"currency_pickup",
 &"enemy_killed": &"enemy_death",
 &"enemy_spawn_warned": &"enemy_spawn_warning",
