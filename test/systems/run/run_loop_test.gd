@@ -114,3 +114,13 @@ func test_player_death_ends_the_run_after_the_death_delay() -> void:
 	assert_bool(_results[0].died).is_true()
 	assert_float(Game.time_left).is_equal(left_at_death)
 	assert_float(_results[0].time_survived).is_equal_approx(0.6 - left_at_death, 0.001)
+
+
+func test_kills_follow_enemy_killed_into_the_result() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	var data: EnemyData = EnemyData.new()
+	var info: DamageInfo = DamageInfo.new()
+	Events.enemy_killed.emit(null, data, info)
+	Events.enemy_killed.emit(null, data, info)
+	assert_int(_run.kills).is_equal(2)
+	assert_int(_run.build_result().kills).is_equal(2)
