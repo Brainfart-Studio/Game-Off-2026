@@ -53,6 +53,7 @@ script = ExtResource("5_label")
 [node name="Content" type="Node2D" parent="PeacefulWorld"]
 
 [node name="CombatWorld" type="Node2D" parent="."]
+visible = false
 
 [node name="Skin" type="TileMapLayer" parent="CombatWorld"]
 script = ExtResource("3_skin")
@@ -61,6 +62,7 @@ id = "tiles_combat"
 
 [node name="Background" type="CanvasLayer" parent="CombatWorld"]
 layer = -10
+visible = false
 script = ExtResource("4_bg")
 texture_path = "res://art/backgrounds/bg_combat.png"
 id = "bg_combat"

@@ -1,3 +1,4 @@
+@tool
 class_name Display
 ## Display helpers. The view size comes from project settings, never a literal.
 

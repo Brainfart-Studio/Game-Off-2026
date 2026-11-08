@@ -15,3 +15,8 @@ func test_floor_is_saved_in_the_scene() -> void:
 	assert_int(collision.get_cell_source_id(Vector2i(0, _arena.floor_top))).is_equal(0)
 	assert_int(collision.get_cell_source_id(last)).is_equal(0)
 
+
+func test_editor_shows_the_peaceful_world() -> void:
+	assert_bool((_arena.get_node("PeacefulWorld") as Node2D).visible).is_true()
+	assert_bool((_arena.get_node("CombatWorld") as Node2D).visible).is_false()
+	assert_bool((_arena.get_node("CombatWorld/Background") as CanvasLayer).visible).is_false()

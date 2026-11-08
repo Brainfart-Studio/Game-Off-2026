@@ -1,3 +1,4 @@
+@tool
 class_name AssetLoader
 extends RefCounted
 ## Static asset helpers with labeled fallbacks. Not an autoload.
