@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="SoundConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/audio/sound_config.gd" id="1_cfg"]
+[ext_resource type="Script" path="res://scripts/systems/audio/sound_def.gd" id="2_def"]
+
+[sub_resource type="Resource" id="Resource_step"]
+script = ExtResource("2_def")
+id = &"player_step"
+volume_db = -6.0
+pitch_min = 0.9
+pitch_max = 1.1
+max_voices = 2
+cooldown = 0.1
+
+[resource]
+script = ExtResource("1_cfg")
+sounds = Array[ExtResource("2_def")]([SubResource("Resource_step")])
+bindings = Dictionary[StringName, StringName]({
+&"player_jumped": &"player_jump",
+&"player_landed": &"player_land",
+&"player_stepped": &"player_step",
+&"shift_denied": &"shift_denied",
+&"world_shift_started.combat": &"shift_to_combat",
+&"world_shift_started.peaceful": &"shift_to_peaceful"
+})

@@ -59,4 +59,5 @@ loop = false
 
 [resource]
 script = ExtResource("1_cfg")
+step_interval = 0.3
 animations = Array[ExtResource("2_def")]([SubResource("Resource_idle"), SubResource("Resource_run"), SubResource("Resource_jump"), SubResource("Resource_apex"), SubResource("Resource_fall"), SubResource("Resource_land")])

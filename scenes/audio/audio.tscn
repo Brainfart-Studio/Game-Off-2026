@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/audio/audio.gd" id="1_audio"]
+[ext_resource type="Resource" path="res://config/audio/sound_config.tres" id="2_cfg"]
+
+[node name="Audio" type="Node"]
+process_mode = 3
+script = ExtResource("1_audio")
+config = ExtResource("2_cfg")

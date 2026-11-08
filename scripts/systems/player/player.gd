@@ -22,6 +22,8 @@ var config: PlayerConfig
 
 var _jump_consumed: bool = false
 var _jump_cut_done: bool = false
+var _was_on_floor: bool = false
+var _step_left: float = 0.0
 
 
 func _ready() -> void:
@@ -46,6 +48,7 @@ func _physics_process(delta: float) -> void:
 	if machine.current != null:
 		machine.current.physics_update(delta)
 	move_and_slide()
+	_emit_ground_events(delta)
 
 
 ## Horizontal movement toward the input direction, with ground or air accel and decel.
@@ -90,6 +93,7 @@ func jump() -> void:
 	_jump_cut_done = false
 	buffer_left = 0.0
 	coyote_left = 0.0
+	Events.player_jumped.emit()
 
 
 ## Shortens the jump once, when jump is released while rising.
@@ -116,6 +120,22 @@ func _update_timers(delta: float) -> void:
 		buffer_left = stats.value(&"jump_buffer_time")
 	else:
 		buffer_left = maxf(buffer_left - delta, 0.0)
+
+
+## Emits `player_landed` on touching the floor and `player_stepped` every `step_interval` while
+## running on it. The step countdown is 0 while stopped or airborne, so the first step is at once.
+func _emit_ground_events(delta: float) -> void:
+	var on_floor: bool = is_on_floor()
+	if on_floor and not _was_on_floor:
+		Events.player_landed.emit()
+	_was_on_floor = on_floor
+	if on_floor and absf(velocity.x) > 1.0:
+		_step_left -= delta
+		if _step_left <= 0.0:
+			Events.player_stepped.emit()
+			_step_left = stats.value(&"step_interval")
+	else:
+		_step_left = 0.0
 
 
 func _build_sprite() -> void:

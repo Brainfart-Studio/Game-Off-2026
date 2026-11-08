@@ -46,6 +46,10 @@ extends GameConfig
 ## Collision body size (px). Feet sit at the node origin.
 @export var body_size: Vector2 = Vector2(12, 22)
 
+@export_group("Audio")
+## Time between footstep sounds while running (s).
+@export var step_interval: float = 0.3
+
 @export_group("Animation")
 ## One def per player animation, looked up by id.
 @export var animations: Array[AnimationDef] = []
@@ -79,6 +83,8 @@ func validate() -> PackedStringArray:
 		warnings.append("time_to_apex must be positive")
 	if run_speed <= 0.0:
 		warnings.append("run_speed must be positive")
+	if step_interval <= 0.0:
+		warnings.append("step_interval must be positive")
 	if max_fall_speed <= 0.0:
 		warnings.append("max_fall_speed must be positive")
 	if ground_accel <= 0.0 or ground_decel <= 0.0 or air_accel <= 0.0 or air_decel <= 0.0:
