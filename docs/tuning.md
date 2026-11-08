@@ -6,7 +6,8 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 
 | Config | File | Controls |
 |---|---|---|
-| Player | `config/player/player_config.tres` | Movement, jump, gravity, body size, animations |
+| Player | `config/player/player_config.tres` | Movement, jump, gravity, body size, combat, animations |
+| Moveset | `config/player/moveset.tres` | The player's four attacks and their timing, hitbox, and knockback |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
@@ -34,6 +35,34 @@ Units are pixels and seconds.
 | `apex_threshold`, `apex_gravity_multiplier`, `apex_speed_multiplier` | The floaty band at the top of a jump |
 | `body_size` | Collision box size |
 | `step_interval` | Time between footstep sounds while running |
+
+**Player combat**
+
+| Value | Effect |
+|---|---|
+| `max_health` | Health at the start of a run |
+| `hurt_iframes` | Seconds the player cannot be hit after a hit |
+| `hurt_stun` | Seconds the player cannot act after a hit |
+| `hurt_knockback_multiplier` | Scales the knockback taken |
+| `iframe_blink_rate` | Blinks per second while invulnerable. The sprite dims to 35% and back |
+| `attack_buffer_time` | How long an early attack press is remembered |
+| `attack_speed` | Above 1 shortens every attack. Divides startup, active, and recovery |
+| `attack_reach` | Scales every attack's hitbox size and offset |
+| `attack_damage` | Scales every attack's damage, rounded, at least 1 |
+| `moveset` | The `Moveset` resource the player attacks with |
+
+Upgrades change `attack_speed`, `attack_reach`, `attack_damage`, `max_health`, and the other values through `Stats`, never by editing the config.
+
+**Player moveset**
+
+`moveset.tres` has a slot for each stance and direction. Today it fills `ground_side`, `ground_up`, `ground_neutral`, and `air_down`. Every other slot falls back as described under Attacks below: an empty air slot uses the ground slot of the same direction, and an empty ground slot uses `ground_neutral`. The held direction picks the slot: up or down when the stick points that way at least as much as sideways, side when pushed left or right, neutral when nothing is held. Down on the ground has no slot, so it uses `ground_neutral`.
+
+| Attack | Slot | Notes |
+|---|---|---|
+| `side` | `ground_side` | Also used in the air. Low `move_control`, so the player keeps most of their run speed |
+| `up` | `ground_up` | Also used in the air. Steep upward knockback |
+| `neutral` | `ground_neutral` | Wide and slow. Also the fallback for every empty slot |
+| `air_down` | `air_down` | `pogo_velocity` 260 bounces the player up on a hit |
 
 **Camera**
 
@@ -105,7 +134,7 @@ Shake strength follows trauma squared, so small hits stay subtle and big ones ki
 | `SpawnFxEffect` | `animation` | One-shot sprite. Plays at the event's position and frees itself |
 | `SpawnFxEffect` | `offset` | Shift from that position (px) |
 
-Entries now: `shift` (small shake and rumble, on `world_shift_started`) and `shift_denied` (light rumble, on `shift_denied`).
+Entries now: `shift` (small shake and rumble, on `world_shift_started`), `shift_denied` (light rumble, on `shift_denied`), `player_hurt` (shake, hitstop, red screen flash, red sprite flash, rumble, on `player_damaged`), and `player_death` (large shake, white screen flash, strong rumble, on `player_died`). `player_attacked`, `player_damaged`, and `player_died` also have sound bindings, and `attack_swing` has a `SoundDef` for pitch variation and 3 voices.
 
 **Attacks**
 
