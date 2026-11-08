@@ -9,6 +9,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Player | `config/player/player_config.tres` | Movement, jump, gravity, body size, combat, animations |
 | Moveset | `config/player/moveset.tres` | The player's four attacks and their timing, hitbox, and knockback |
 | Walker | `config/enemies/walker.tres` | The walker's health, speeds, senses, contact hit, rewards, body size, animations |
+| Spawner | `config/enemies/spawn_config.tres` | Which enemies spawn, how often, how many at once, and the warning before each |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
@@ -185,6 +186,23 @@ An `EnemyData` config describes one enemy type. `config/enemies/walker.tres` is 
 | `currency_drop`, `score_value` | Currency dropped and score given on a kill. Used by later branches |
 | `body_size` | Collision and hurt box size, feet at the origin (px). The contact box is 80% of it |
 | `animations` | Animation strips the sprite builds |
+
+**Spawning**
+
+A `SpawnConfig` config drives the spawner. Run progress (time elapsed over the run length) goes through `ramp` to a value from 0 to 1, and that value blends each start value into its end value. The spawner only counts down while the run is live and the combat world is shown.
+
+| Value | Effect |
+|---|---|
+| `enemies` | Enemy types the spawner picks from at random |
+| `first_delay` | Seconds after the run starts before the first spawn |
+| `start_interval`, `end_interval` | Seconds between spawns at the start and at the end of the run |
+| `start_max_alive`, `end_max_alive` | Enemies plus warnings alive at once at the start and at the end of the run |
+| `ramp` | Curve from run progress to ramp value. Empty means linear |
+| `telegraph_time` | Seconds the warning shows before the enemy appears |
+| `min_player_distance` | Spawn markers closer to the player than this are skipped (px). With none left, that spawn is skipped |
+| `telegraph_animation` | Animation of the warning |
+
+Spawn points are `Marker2D` nodes in the `enemy_spawn` group, under `CombatWorld/SpawnPoints` in the arena.
 
 **UI**
 

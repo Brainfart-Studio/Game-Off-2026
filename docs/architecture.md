@@ -75,6 +75,8 @@ Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scen
 
 **Hit, hurt, and death.** A hit reaches `Hurtbox`; the enemy emits `hit_landed` and enters `Hurt`, which applies the knockback less `knockback_resistance` and returns to `resume_state`. When `Health` empties, the enemy enters `Die` first: it turns both boxes off, emits `enemy_killed`, and frees itself after `death_time`, counted in physics. `Run` counts kills from `enemy_killed`. `Audio` and `Feedback` play from bindings.
 
+**Spawner.** `Spawner` is a run-scene node. Each physics frame it does nothing unless `Game.is_combat_live()`, so a peaceful world or a run that is not `RUNNING` stops its countdown. When the countdown ends and enemies plus telegraphs are under the cap for the run's progress, it picks a random `enemy_spawn` marker far enough from `Game.player` and adds a `SpawnTelegraph` there. Telegraphs and the enemies they place live under the combat `Content`, so the world freeze stops both, and a telegraph counts its time in physics. `SpawnConfig` turns run progress into the interval and the cap (see [tuning.md](tuning.md)).
+
 ## ActorSprite
 
 `ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
@@ -159,6 +161,7 @@ Run                  composition root, script run.gd
   Player
   GameCamera
   WorldShift
+  Spawner
   Results          CanvasLayer, hidden until run_ended
   DebugOverlay
   StateMachine     Starting, Running, Ended
