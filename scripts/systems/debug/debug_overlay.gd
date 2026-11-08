@@ -6,13 +6,11 @@ extends CanvasLayer
 
 var _player: Player
 var _shift: WorldShift
-var _world: World.Id = World.Id.PEACEFUL
 
 
 func _ready() -> void:
 	visible = false
 	Events.player_spawned.connect(_on_player_spawned)
-	Events.world_shifted.connect(_on_world_shifted)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -35,7 +33,7 @@ func _process(_delta: float) -> void:
 		lines.append("buffer: %.2f" % _player.buffer_left)
 	else:
 		lines.append("no player")
-	lines.append("world: %s" % World.Id.keys()[_world])
+	lines.append("world: %s" % World.Id.keys()[Game.world])
 	if _shift != null:
 		lines.append("shift cooldown: %.2f" % _shift.cooldown_left)
 	lines.append("fps: %d" % Engine.get_frames_per_second())
@@ -44,7 +42,3 @@ func _process(_delta: float) -> void:
 
 func _on_player_spawned(player: Node2D) -> void:
 	_player = player as Player
-
-
-func _on_world_shifted(to: World.Id) -> void:
-	_world = to

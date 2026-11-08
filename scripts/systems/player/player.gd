@@ -31,10 +31,13 @@ func _ready() -> void:
 	machine.set_physics_process(false)
 	_build_sprite()
 	add_to_group(Groups.PLAYER)
-	var spawn: Node2D = get_tree().get_first_node_in_group(Groups.PLAYER_SPAWN) as Node2D
-	if spawn != null:
-		global_position = spawn.global_position
-	Events.player_spawned.emit.call_deferred(self)
+
+
+## Places the player and announces it. Run calls this once, after the arena is set up.
+func spawn(at: Vector2) -> void:
+	global_position = at
+	velocity = Vector2.ZERO
+	Events.player_spawned.emit(self)
 
 
 func _physics_process(delta: float) -> void:

@@ -5,8 +5,10 @@
 [ext_resource type="PackedScene" path="res://scenes/debug/debug_overlay.tscn" id="3_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/camera/game_camera.tscn" id="4_camera"]
 [ext_resource type="PackedScene" path="res://scenes/shift/world_shift.tscn" id="5_shift"]
+[ext_resource type="Script" path="res://scripts/systems/run/run.gd" id="6_run"]
 
-[node name="Main" type="Node2D"]
+[node name="Run" type="Node2D"]
+script = ExtResource("6_run")
 
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
 
