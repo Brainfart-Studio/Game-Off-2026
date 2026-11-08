@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/economy/economy.gd" id="1_economy"]
+[ext_resource type="Resource" path="res://config/economy/economy_config.tres" id="2_cfg"]
+
+[node name="Economy" type="Node"]
+script = ExtResource("1_economy")
+config = ExtResource("2_cfg")
