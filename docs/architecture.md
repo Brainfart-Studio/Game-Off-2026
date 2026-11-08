@@ -64,6 +64,14 @@ Combat pieces live in `scripts/systems/combat/` and know nothing about the playe
 
 **Attacks.** An `AttackData` config holds one attack's hitbox, timing, damage, knockback, and effects. A `Moveset` picks the attack by stance and input direction, falling back from air to ground to `ground_neutral`.
 
+## ActorSprite
+
+`ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
+
+## Player combat
+
+The player attacks, takes hits, and dies through states: `Attack`, `Hurt`, and `Dead`. `Attack` reads the `Moveset` and the held direction when it starts, locks the facing, and turns `AttackHitbox` on after startup and off after the active time. `Health` and `Stats` are siblings under the player. A hit reaches the player through `Hurtbox`; the player emits `player_damaged`, `player_health_changed`, and `player_died`, and `Audio` and `Feedback` play from bindings. Run end on death is the run loop's job, not the player's.
+
 ## Configs
 
 Every tunable lives in a `GameConfig` resource under `config/`, edited in the inspector. Scripts read the values and hold no magic numbers. A config can override `validate()` to return warnings. See [tuning.md](tuning.md).

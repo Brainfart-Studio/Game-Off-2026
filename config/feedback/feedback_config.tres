@@ -5,6 +5,9 @@
 [ext_resource type="Script" path="res://scripts/systems/feedback/effects/shake_effect.gd" id="3_shake"]
 [ext_resource type="Script" path="res://scripts/systems/feedback/effects/haptics_effect.gd" id="4_haptics"]
 [ext_resource type="Script" path="res://scripts/systems/feedback/feedback_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://scripts/systems/feedback/effects/hitstop_effect.gd" id="6_hitstop"]
+[ext_resource type="Script" path="res://scripts/systems/feedback/effects/screen_flash_effect.gd" id="7_screen_flash"]
+[ext_resource type="Script" path="res://scripts/systems/feedback/effects/sprite_flash_effect.gd" id="8_sprite_flash"]
 
 [sub_resource type="Resource" id="Resource_shift_shake"]
 script = ExtResource("3_shake")
@@ -32,10 +35,62 @@ script = ExtResource("2_entry")
 id = &"shift_denied"
 effects = Array[ExtResource("5_effect")]([SubResource("Resource_denied_haptics")])
 
+[sub_resource type="Resource" id="Resource_hurt_shake"]
+script = ExtResource("3_shake")
+trauma = 0.5
+
+[sub_resource type="Resource" id="Resource_hurt_hitstop"]
+script = ExtResource("6_hitstop")
+duration = 0.08
+time_scale = 0.05
+
+[sub_resource type="Resource" id="Resource_hurt_screen_flash"]
+script = ExtResource("7_screen_flash")
+color = Color(1, 0.2, 0.2, 0.35)
+duration = 0.15
+
+[sub_resource type="Resource" id="Resource_hurt_sprite_flash"]
+script = ExtResource("8_sprite_flash")
+color = Color(1, 0.3, 0.3, 1)
+duration = 0.15
+
+[sub_resource type="Resource" id="Resource_hurt_haptics"]
+script = ExtResource("4_haptics")
+weak = 0.6
+strong = 0.8
+duration = 0.25
+
+[sub_resource type="Resource" id="Resource_player_hurt"]
+script = ExtResource("2_entry")
+id = &"player_hurt"
+effects = Array[ExtResource("5_effect")]([SubResource("Resource_hurt_shake"), SubResource("Resource_hurt_hitstop"), SubResource("Resource_hurt_screen_flash"), SubResource("Resource_hurt_sprite_flash"), SubResource("Resource_hurt_haptics")])
+
+[sub_resource type="Resource" id="Resource_death_shake"]
+script = ExtResource("3_shake")
+trauma = 0.8
+
+[sub_resource type="Resource" id="Resource_death_screen_flash"]
+script = ExtResource("7_screen_flash")
+color = Color(1, 1, 1, 0.5)
+duration = 0.3
+
+[sub_resource type="Resource" id="Resource_death_haptics"]
+script = ExtResource("4_haptics")
+weak = 1.0
+strong = 1.0
+duration = 0.5
+
+[sub_resource type="Resource" id="Resource_player_death"]
+script = ExtResource("2_entry")
+id = &"player_death"
+effects = Array[ExtResource("5_effect")]([SubResource("Resource_death_shake"), SubResource("Resource_death_screen_flash"), SubResource("Resource_death_haptics")])
+
 [resource]
 script = ExtResource("1_cfg")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied"), SubResource("Resource_player_hurt"), SubResource("Resource_player_death")])
 bindings = Dictionary[StringName, StringName]({
+&"player_damaged": &"player_hurt",
+&"player_died": &"player_death",
 &"shift_denied": &"shift_denied",
 &"world_shift_started": &"shift"
 })

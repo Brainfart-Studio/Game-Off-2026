@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/systems/player/player_config.gd" id="1_cfg"]
 [ext_resource type="Script" path="res://scripts/core/animation_def.gd" id="2_def"]
+[ext_resource type="Resource" path="res://config/player/moveset.tres" id="3_moveset"]
 
 [sub_resource type="Resource" id="Resource_idle"]
 script = ExtResource("2_def")
@@ -57,7 +58,71 @@ frames = 2
 fps = 15.0
 loop = false
 
+[sub_resource type="Resource" id="Resource_attack_side"]
+script = ExtResource("2_def")
+id = &"player_attack_side"
+path = "res://art/player/player_attack_side.png"
+frame_size = Vector2i(64, 32)
+frames = 6
+fps = 20.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_attack_up"]
+script = ExtResource("2_def")
+id = &"player_attack_up"
+path = "res://art/player/player_attack_up.png"
+frame_size = Vector2i(32, 64)
+frames = 6
+fps = 20.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_attack_neutral"]
+script = ExtResource("2_def")
+id = &"player_attack_neutral"
+path = "res://art/player/player_attack_neutral.png"
+frame_size = Vector2i(64, 32)
+frames = 6
+fps = 20.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_attack_down_air"]
+script = ExtResource("2_def")
+id = &"player_attack_down_air"
+path = "res://art/player/player_attack_down_air.png"
+frame_size = Vector2i(32, 64)
+frames = 5
+fps = 20.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_hurt"]
+script = ExtResource("2_def")
+id = &"player_hurt"
+path = "res://art/player/player_hurt.png"
+frame_size = Vector2i(32, 32)
+frames = 2
+fps = 10.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_death"]
+script = ExtResource("2_def")
+id = &"player_death"
+path = "res://art/player/player_death.png"
+frame_size = Vector2i(32, 32)
+frames = 6
+fps = 10.0
+loop = false
+
 [resource]
 script = ExtResource("1_cfg")
 step_interval = 0.3
-animations = Array[ExtResource("2_def")]([SubResource("Resource_idle"), SubResource("Resource_run"), SubResource("Resource_jump"), SubResource("Resource_apex"), SubResource("Resource_fall"), SubResource("Resource_land")])
+max_health = 3
+hurt_iframes = 1.0
+hurt_stun = 0.3
+hurt_knockback_multiplier = 1.0
+iframe_blink_rate = 12.0
+attack_buffer_time = 0.12
+attack_speed = 1.0
+attack_reach = 1.0
+attack_damage = 1.0
+moveset = ExtResource("3_moveset")
+animations = Array[ExtResource("2_def")]([SubResource("Resource_idle"), SubResource("Resource_run"), SubResource("Resource_jump"), SubResource("Resource_apex"), SubResource("Resource_fall"), SubResource("Resource_land"), SubResource("Resource_attack_side"), SubResource("Resource_attack_up"), SubResource("Resource_attack_neutral"), SubResource("Resource_attack_down_air"), SubResource("Resource_hurt"), SubResource("Resource_death")])

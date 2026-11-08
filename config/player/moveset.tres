@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="Moveset" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/combat/moveset.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://scripts/systems/combat/attack_data.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="Resource_ground_side"]
+script = ExtResource("2_attack")
+id = &"side"
+animation = &"player_attack_side"
+hitbox_size = Vector2(28, 14)
+hitbox_offset = Vector2(18, -11)
+startup = 0.05
+active = 0.1
+recovery = 0.15
+damage = 1
+knockback_angle = -20.0
+knockback_force = 180.0
+move_control = 0.3
+pogo_velocity = 0.0
+
+[sub_resource type="Resource" id="Resource_ground_up"]
+script = ExtResource("2_attack")
+id = &"up"
+animation = &"player_attack_up"
+hitbox_size = Vector2(20, 26)
+hitbox_offset = Vector2(4, -34)
+startup = 0.06
+active = 0.1
+recovery = 0.16
+damage = 1
+knockback_angle = -80.0
+knockback_force = 200.0
+move_control = 0.5
+pogo_velocity = 0.0
+
+[sub_resource type="Resource" id="Resource_ground_neutral"]
+script = ExtResource("2_attack")
+id = &"neutral"
+animation = &"player_attack_neutral"
+hitbox_size = Vector2(44, 16)
+hitbox_offset = Vector2(0, -12)
+startup = 0.08
+active = 0.12
+recovery = 0.2
+damage = 1
+knockback_angle = -45.0
+knockback_force = 160.0
+move_control = 0.2
+pogo_velocity = 0.0
+
+[sub_resource type="Resource" id="Resource_air_down"]
+script = ExtResource("2_attack")
+id = &"air_down"
+animation = &"player_attack_down_air"
+hitbox_size = Vector2(16, 20)
+hitbox_offset = Vector2(0, 6)
+startup = 0.04
+active = 0.2
+recovery = 0.1
+damage = 1
+knockback_angle = 90.0
+knockback_force = 120.0
+move_control = 1.0
+pogo_velocity = 260.0
+
+[resource]
+script = ExtResource("1_moveset")
+ground_side = SubResource("Resource_ground_side")
+ground_up = SubResource("Resource_ground_up")
+ground_neutral = SubResource("Resource_ground_neutral")
+air_down = SubResource("Resource_air_down")

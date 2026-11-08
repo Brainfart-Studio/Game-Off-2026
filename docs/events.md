@@ -13,6 +13,10 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `player_jumped` | none | `Player` | `Audio` (bound sounds) | `Player.jump()` launches a jump |
 | `player_landed` | none | `Player` | `Audio` (bound sounds) | After `move_and_slide()`, the player is on the floor and was not on the previous frame |
 | `player_stepped` | none | `Player` | `Audio` (bound sounds) | While running on the floor (speed above 1 px/s), every `step_interval`. The first step fires on the first running frame |
+| `player_attacked` | `attack: AttackData` | `PlayerAttack` state | `Audio` (bound sounds) | An attack starts, as the player enters the `Attack` state |
+| `player_damaged` | `info: DamageInfo` | `Player` | `Audio`, `Feedback` (bound entries) | The player took a hit that was not blocked by invulnerability. Fires also on the killing hit, after `player_died` |
+| `player_health_changed` | `current: int`, `max_health: int` | `Player` | nobody yet | The player's health changed, and once from `Player.spawn()` |
+| `player_died` | none | `Player` | `Audio`, `Feedback` (bound entries) | The player's health reached 0. Fires once, before `player_damaged` of the same hit |
 
 `Audio` listens to the signals named in `sound_config.tres` `bindings` (see [tuning.md](tuning.md)), plus `world_shifted` for music. A bound event can also be a world event with a variant key, such as `world_shift_started.combat`.
 
