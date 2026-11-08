@@ -5,7 +5,7 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | Signal | Arguments | Emitted by | Listened to by | When it fires |
 |---|---|---|---|---|
 | `world_shift_started` | `to: World.Id` | `WorldShift` | `Audio` (bound sounds), `Feedback` (bound entries), `Economy` (clears pickups) | A shift begins, before the screen fade |
-| `world_shifted` | `to: World.Id` | `WorldShift` | `ArenaWorlds`, `Game`, `Audio` (music crossfade) | The screen is covered and the world switches. Also once per run, from `WorldShift.start()`, the last step of the run setup order, with the starting world |
+| `world_shifted` | `to: World.Id` | `WorldShift` | `ArenaWorlds`, `Game`, `Audio` (music crossfade), `HUD` | The screen is covered and the world switches. Also once per run, from `WorldShift.start()`, the last step of the run setup order, with the starting world |
 | `shift_denied` | none | `WorldShift` | `Audio` (bound sounds), `Feedback` (bound entries) | Shift is pressed during the cooldown or an active shift |
 | `arena_bounds_changed` | `bounds: Rect2` | `ArenaBounds` | `GameCamera` | `ArenaBounds.setup()` runs, the first step of the run setup order. Fires immediately, in the same frame. Carries the arena rect in global pixels |
 | `player_spawned` | `player: Node2D` | `Player` | `GameCamera`, `DebugOverlay`, `Game` | `Player.spawn()` runs, the second step of the run setup order. Fires immediately, in the same frame |
@@ -15,21 +15,21 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `player_stepped` | none | `Player` | `Audio` (bound sounds) | While running on the floor (speed above 1 px/s), every `step_interval`. The first step fires on the first running frame |
 | `player_attacked` | `attack: AttackData` | `PlayerAttack` state | `Audio` (bound sounds) | An attack starts, as the player enters the `Attack` state |
 | `player_damaged` | `info: DamageInfo` | `Player` | `Audio`, `Feedback` (bound entries), `Score` (breaks the combo) | The player took a hit that was not blocked by invulnerability. Fires also on the killing hit, after `player_died` |
-| `player_health_changed` | `current: int`, `max_health: int` | `Player` | nobody yet | The player's health changed, and once from `Player.spawn()` |
+| `player_health_changed` | `current: int`, `max_health: int` | `Player` | `HUD` | The player's health changed, and once from `Player.spawn()` |
 | `player_died` | none | `Player` | `Audio`, `Feedback` (bound entries) | The player's health reached 0. Fires once, before `player_damaged` of the same hit |
 | `hit_landed` | `info: DamageInfo` | `Enemy` | `Audio`, `Feedback` (bound entries), `Score` | An enemy took a hit. Fires also on the killing hit, after `enemy_killed` |
 | `enemy_spawned` | `enemy: Node2D` | `Enemy` | `Audio` (bound sounds) | An enemy finishes `_ready`, with its data set |
 | `enemy_spawn_warned` | `position: Vector2` | `SpawnTelegraph` | `Audio` (bound sounds) | A spawn telegraph appears, before the enemy does. `position` is where the enemy will stand |
 | `enemy_killed` | `enemy: Node2D`, `data: EnemyData`, `info: DamageInfo` | `EnemyDie` state | `Run` (kill count), `Economy` (drops), `Score`, `Audio`, `Feedback` (bound entries) | An enemy enters `Die`. Fires once, before `hit_landed` of the same hit |
 | `currency_collected` | `amount: int` | `Pickup` | `Economy`, `Audio` (bound sounds) | A pickup is collected, by the magnet or by touching the player. Fires once per pickup |
-| `wallet_changed` | `currency: int` | `Economy` | nobody yet | The wallet changed, and once when the run starts |
-| `score_changed` | `score: int` | `Score` | `Run` (result score) | The score changed, and once when the run starts |
-| `combo_changed` | `fill: float`, `multiplier: int` | `Score` | `Run` (best multiplier) | The combo bar or multiplier changed, including each frame the bar drains, and once when the run starts |
+| `wallet_changed` | `currency: int` | `Economy` | `HUD` | The wallet changed, and once when the run starts |
+| `score_changed` | `score: int` | `Score` | `Run` (result score), `HUD` | The score changed, and once when the run starts |
+| `combo_changed` | `fill: float`, `multiplier: int` | `Score` | `Run` (best multiplier), `HUD` | The combo bar or multiplier changed, including each frame the bar drains, and once when the run starts |
 | `combo_raised` | `multiplier: int` | `Score` | `Audio`, `Feedback` (bound entries) | The bar filled and the multiplier went up one step. Not fired at the cap |
 | `combo_broken` | none | `Score` | `Audio` (bound sounds) | A multiplier above 1 was lost, by draining to 0 or by the player taking damage |
-| `run_started` | none | `RunStarting` state | `Feedback` (reset), `Economy`, `Score` | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
-| `time_changed` | `left: float` | `RunStarting`, `RunRunning` | nobody yet | Once when the run starts, then each time the whole seconds left change, and at 0 |
-| `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds) | Once per second from `warning_time` seconds left down to 1, when that second begins |
+| `run_started` | none | `RunStarting` state | `Feedback` (reset), `Economy`, `Score`, `HUD` (timer color) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
+| `time_changed` | `left: float` | `RunStarting`, `RunRunning` | `HUD` | Once when the run starts, then each time the whole seconds left change, and at 0 |
+| `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds), `HUD` (timer color) | Once per second from `warning_time` seconds left down to 1, when that second begins |
 | `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset), `Results` | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
 | `run_restart_requested` | none | `Results` | `Run` | A restart is requested. `Run` unpauses and reloads the scene |
 

@@ -123,6 +123,8 @@ UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `Ui
 
 `Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows the run's numbers. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
 
+`HUD` (a `CanvasLayer`, layer 10) shows the run in progress: health pips, timer, world name, score, combo bar with the multiplier, and currency. It reads events only and never polls: `player_health_changed`, `time_changed`, `time_warning`, `run_started`, `world_shifted`, `score_changed`, `combo_changed`, and `wallet_changed`. Each widget is set by its event, and the modules announce their starting values on `run_started`, so the HUD needs no direct reference to any of them. The pips are rebuilt whenever the max health changes.
+
 ## Missing assets
 
 A missing sprite never breaks the game. `AssetLoader` returns a labeled colored box of the right size. A missing sound stays silent. Art and SFX can be added at any time.
@@ -172,6 +174,7 @@ Run                  composition root, script run.gd
   Spawner
   Economy
   Score
+  HUD              CanvasLayer, layer 10, reads events only
   Results          CanvasLayer, hidden until run_ended
   DebugOverlay
   StateMachine     Starting, Running, Ended
