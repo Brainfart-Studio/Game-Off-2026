@@ -54,6 +54,8 @@ func _ready() -> void:
 	_on_combo_changed(0.0, 1)
 	Events.player_health_changed.connect(_on_player_health_changed)
 	Events.time_changed.connect(_on_time_changed)
+	Events.time_warning.connect(_on_time_warning)
+	Events.run_started.connect(_on_run_started)
 	Events.world_shifted.connect(_on_world_shifted)
 	Events.wallet_changed.connect(_on_wallet_changed)
 	Events.score_changed.connect(_on_score_changed)
@@ -73,6 +75,14 @@ func _on_player_health_changed(current: int, max_health: int) -> void:
 
 func _on_time_changed(left: float) -> void:
 	_timer.text = format_time(left)
+
+
+func _on_time_warning(_seconds_left: int) -> void:
+	_timer.add_theme_color_override(&"font_color", config.highlight_color)
+
+
+func _on_run_started() -> void:
+	_timer.add_theme_color_override(&"font_color", config.text_color)
 
 
 func _on_world_shifted(to: World.Id) -> void:
