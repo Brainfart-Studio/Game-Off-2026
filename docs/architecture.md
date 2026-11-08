@@ -109,8 +109,19 @@ Rule: everything that belongs to combat (enemies, projectiles, drops) is spawned
 2. `Arena.setup()`: fills the default floor, hides `Collision`, builds both skins, builds the walls and emits `arena_bounds_changed`, registers both `Content` nodes with `Game`
 3. `Player.spawn(Arena.player_spawn_position())`: emits `player_spawned`
 4. `WorldShift.start()`: emits `world_shifted` with the start world
+5. Run state: sets `Game.run_duration` and `Game.time_left` from `RunConfig`, then enters `Starting`
 
 Listeners are connected in `_ready`, so they all exist before the first signal fires. No setup signal is deferred.
+
+## Run states
+
+`Run` owns a `StateMachine` (last child) with three states in `scripts/systems/run/states/`. They set `Game.phase`, and `Run` is the only writer of the timer through them.
+
+- `Starting`: emits `run_started` and `time_changed`, waits `start_delay` (or leaves at once if the player already died), then `Running`.
+- `Running`: lowers `Game.time_left` each frame, emits `time_changed` when the whole seconds change and `time_warning` for the last `warning_time` seconds, and goes to `Ended` at 0. After `player_died` the timer stops and `Ended` follows after `death_delay`.
+- `Ended`: pauses the tree (unless `Run.pause_tree_on_end` is off, for tests) and emits `run_ended` with a `RunResult`.
+
+Restart: `run_restart_requested` makes `Run` unpause the tree and reload the scene, so every module starts fresh. `Feedback` resets itself on `run_started` and `run_ended`.
 
 ## Main scene
 
@@ -127,4 +138,5 @@ Run                  composition root, script run.gd
   GameCamera
   WorldShift
   DebugOverlay
+  StateMachine     Starting, Running, Ended
 ```
