@@ -48,6 +48,7 @@ expand_mode = 1
 [node name="CurrencyAmount" type="Label" parent="Root/TopLeft/Currency"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "0"
 
 [node name="TopCenter" type="VBoxContainer" parent="Root"]
 layout_mode = 1
@@ -64,11 +65,13 @@ mouse_filter = 2
 [node name="Timer" type="Label" parent="Root/TopCenter"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "0:00"
 horizontal_alignment = 1
 
 [node name="World" type="Label" parent="Root/TopCenter"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "PEACEFUL"
 horizontal_alignment = 1
 
 [node name="TopRight" type="VBoxContainer" parent="Root"]
@@ -86,6 +89,7 @@ mouse_filter = 2
 [node name="Score" type="Label" parent="Root/TopRight"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "0"
 horizontal_alignment = 2
 
 [node name="ComboRow" type="HBoxContainer" parent="Root/TopRight"]
@@ -96,6 +100,7 @@ theme_override_constants/separation = 4
 [node name="Multiplier" type="Label" parent="Root/TopRight/ComboRow"]
 unique_name_in_owner = true
 layout_mode = 2
+text = "x1"
 size_flags_horizontal = 3
 
 [node name="Combo" type="TextureProgressBar" parent="Root/TopRight/ComboRow"]
