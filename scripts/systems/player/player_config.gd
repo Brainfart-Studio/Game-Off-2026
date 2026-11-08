@@ -46,6 +46,28 @@ extends GameConfig
 ## Collision body size (px). Feet sit at the node origin.
 @export var body_size: Vector2 = Vector2(12, 22)
 
+@export_group("Combat")
+## Health the player starts a run with.
+@export var max_health: int = 3
+## Invulnerability after a hit (s).
+@export var hurt_iframes: float = 1.0
+## Time the player cannot act after a hit (s).
+@export var hurt_stun: float = 0.3
+## Multiplier on the knockback taken from a hit.
+@export var hurt_knockback_multiplier: float = 1.0
+## Blink speed while invulnerable (Hz).
+@export var iframe_blink_rate: float = 12.0
+## How long an attack press is remembered (s).
+@export var attack_buffer_time: float = 0.12
+## Attack speed multiplier. Above 1 shortens startup, active, and recovery.
+@export var attack_speed: float = 1.0
+## Multiplier on the hitbox size and offset.
+@export var attack_reach: float = 1.0
+## Multiplier on attack damage.
+@export var attack_damage: float = 1.0
+## The player's attacks.
+@export var moveset: Moveset
+
 @export_group("Audio")
 ## Time between footstep sounds while running (s).
 @export var step_interval: float = 0.3
@@ -89,6 +111,20 @@ func validate() -> PackedStringArray:
 		warnings.append("max_fall_speed must be positive")
 	if ground_accel <= 0.0 or ground_decel <= 0.0 or air_accel <= 0.0 or air_decel <= 0.0:
 		warnings.append("accel and decel values must be positive")
+	if max_health < 1:
+		warnings.append("max_health must be at least 1")
+	if hurt_iframes < 0.0 or hurt_stun < 0.0 or attack_buffer_time < 0.0:
+		warnings.append("hurt_iframes, hurt_stun, and attack_buffer_time must not be negative")
+	if hurt_knockback_multiplier < 0.0 or attack_damage < 0.0:
+		warnings.append("hurt_knockback_multiplier and attack_damage must not be negative")
+	if iframe_blink_rate <= 0.0:
+		warnings.append("iframe_blink_rate must be positive")
+	if attack_speed <= 0.0 or attack_reach <= 0.0:
+		warnings.append("attack_speed and attack_reach must be positive")
+	if moveset == null:
+		warnings.append("moveset is not set")
+	else:
+		warnings.append_array(moveset.validate())
 	for def: AnimationDef in animations:
 		if def == null:
 			warnings.append("animations has an empty entry")
