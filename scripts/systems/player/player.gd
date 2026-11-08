@@ -7,8 +7,7 @@ extends CharacterBody2D
 @onready var input: PlayerInput = $PlayerInput
 @onready var machine: StateMachine = $StateMachine
 @onready var visual: Node2D = $Visual
-@onready var sprite: AnimatedSprite2D = $Visual/Sprite
-@onready var asset_label: AssetLabel = $Visual/AssetLabel
+@onready var sprite: ActorSprite = $Visual/Sprite
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -33,6 +32,11 @@ func _ready() -> void:
 	machine.set_physics_process(false)
 	_build_sprite()
 	add_to_group(Groups.PLAYER)
+
+
+## Flashes the sprite. Feedback calls this on the event's target.
+func flash(color: Color, duration: float) -> void:
+	sprite.flash(color, duration)
 
 
 ## Places the player and announces it. Run calls this once, after the arena is set up.
@@ -139,11 +143,8 @@ func _emit_ground_events(delta: float) -> void:
 
 
 func _build_sprite() -> void:
-	sprite.sprite_frames = AssetLoader.sprite_frames(config.animations)
-	var first: StringName = &"player_idle"
-	if sprite.sprite_frames.has_animation(first):
-		sprite.play(first)
-		asset_label.show_if_fallback(sprite.sprite_frames.get_frame_texture(first, 0), String(first))
+	sprite.build(config.animations)
+	sprite.play_id(&"player_idle")
 
 
 func _set_facing(direction: int) -> void:

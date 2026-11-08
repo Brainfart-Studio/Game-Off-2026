@@ -18,8 +18,7 @@ const GROUND_STATES: Array[StringName] = [&"Idle", &"Run"]
 @onready var _player: Player = owner as Player
 # Children _ready before their parent, so the Player's own @onready refs are not set yet.
 @onready var _machine: StateMachine = _player.get_node("StateMachine")
-@onready var _sprite: AnimatedSprite2D = _player.get_node("Visual/Sprite")
-@onready var _label: AssetLabel = _player.get_node("Visual/AssetLabel")
+@onready var _sprite: ActorSprite = _player.get_node("Visual/Sprite")
 
 var _landing: bool = false
 var _in_apex: bool = false
@@ -61,9 +60,4 @@ func _on_animation_finished() -> void:
 
 
 func _play(id: StringName) -> void:
-	var frames: SpriteFrames = _sprite.sprite_frames
-	if not frames.has_animation(id):
-		push_warning("PlayerAnimator: no animation '%s'" % id)
-		return
-	_sprite.play(id)
-	_label.show_if_fallback(frames.get_frame_texture(id, 0), String(id))
+	_sprite.play_id(id)
