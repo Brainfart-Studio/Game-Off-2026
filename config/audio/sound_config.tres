@@ -29,7 +29,9 @@ bindings = Dictionary[StringName, StringName]({
 &"player_jumped": &"player_jump",
 &"player_landed": &"player_land",
 &"player_stepped": &"player_step",
+&"run_ended": &"run_end",
 &"shift_denied": &"shift_denied",
+&"time_warning": &"timer_warning",
 &"world_shift_started.combat": &"shift_to_combat",
 &"world_shift_started.peaceful": &"shift_to_peaceful"
 })

@@ -83,6 +83,15 @@ Upgrades change `attack_speed`, `attack_reach`, `attack_damage`, `max_health`, a
 | `fade_color` | Color of the cover |
 | `transition_trans` | Easing curve of the fades |
 
+**Run**
+
+| Value | Effect |
+|---|---|
+| `duration` | Length of a run. 600 is the default; `run_config.tres` uses 120 while developing |
+| `start_delay` | Pause after the run loads before the countdown starts |
+| `death_delay` | Pause between the player dying and the run ending. The timer stops during it |
+| `warning_time` | The timer warning sound plays once per second for this many last seconds |
+
 **Sound**
 
 Drop a file at `audio/sfx/<id>.wav` and it plays when its id is bound to an event. No other setup is needed. A missing file stays silent.
@@ -171,4 +180,4 @@ Live edits are lost when the game stops. Copy the values you like into the `.tre
 
 ## Debug overlay
 
-Press **F1** (or the **Back** button on a gamepad) to show or hide the debug overlay. It shows player state, velocity, floor contact, coyote and buffer timers, the current world, the shift cooldown, and FPS.
+Press **F1** (or the **Back** button on a gamepad) to show or hide the debug overlay. It shows player state, velocity, floor contact, coyote and buffer timers, the current world, the run phase, the time left, the shift cooldown, and FPS.
