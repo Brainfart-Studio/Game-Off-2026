@@ -11,6 +11,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Walker | `config/enemies/walker.tres` | The walker's health, speeds, senses, contact hit, rewards, body size, animations |
 | Spawner | `config/enemies/spawn_config.tres` | Which enemies spawn, how often, how many at once, and the warning before each |
 | Economy | `config/economy/economy_config.tres` | Starting currency, how drops split and pop, how pickups wait, fly, blink, and expire |
+| Score | `config/scoring/score_config.tres` | Score per hit, combo fill and cap, drain, and what breaks the combo |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
@@ -229,6 +230,22 @@ An `EconomyConfig` config drives currency. A killed enemy drops its `currency_dr
 | `pickup_animation` | Animation of a pickup |
 
 Uncollected pickups are cleared when the world shifts.
+
+**Score**
+
+A `ScoreConfig` config drives score and the combo. A landed hit in the combat world adds `score_per_hit` times the multiplier and fills the combo bar; a kill adds the enemy's `score_value` times the multiplier. A full bar raises the multiplier one step and keeps the overflow. After `drain_delay` without a hit the bar drains, and reaching 0 with a multiplier above 1 breaks the combo. Taking damage breaks it at once.
+
+| Value | Effect |
+|---|---|
+| `score_per_hit` | Score for a landed hit, before the multiplier |
+| `fill_per_hit` | Bar fill added by a hit (the bar is 0 to 1) |
+| `max_multiplier` | Highest multiplier. At the cap the bar stays full |
+| `drain_delay` | Seconds without a hit before the bar drains |
+| `drain_rate` | Bar fill lost per second while draining |
+| `damage_breaks_combo` | Taking damage resets the bar and the multiplier |
+| `drain_in_peaceful` | The bar also drains while the world is peaceful. Off by default, so the delay and the drain pause there |
+
+Enemy `score_value` is set per enemy (see Walker). The combo sounds bind `combo_raised` to `combo_up` and `combo_broken` to `combo_break` in `sound_config.tres`; `combo_up` is also a `feedback_config.tres` entry bound to `combo_raised`.
 
 **UI**
 

@@ -81,6 +81,10 @@ Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scen
 
 `Economy` is a run-scene node in `scripts/systems/economy/`. It holds the wallet (`currency`, starting at `start_currency`). On `enemy_killed` it splits the enemy's `currency_drop` into `Pickup` nodes under the combat `Content`, added deferred because a kill can land inside a physics callback. A `Pickup` is an `Area2D` on the pickup layer that watches the player layer: after `pickup_delay` it flies toward an overlapping area in the `magnet` group (the player's `Magnet`) or is collected by touching a body in the `player` group, then emits `currency_collected`. `Economy` adds that amount and emits `wallet_changed`, and again on `run_started`. On `world_shift_started` it frees every pickup. Pickups count time in `_physics_process`, so the world freeze stops them. `EconomyConfig` holds the tunables (see [tuning.md](tuning.md)); `magnet_radius` is a player stat.
 
+## Score
+
+`Score` is a run-scene node in `scripts/systems/scoring/`, placed after `Economy`. It holds `score`, the combo bar `fill`, and the `multiplier`. On `hit_landed` and `enemy_killed` it adds score, but only while `Game.world` is combat; a hit also fills the bar and raises the multiplier when it is full. Each physics frame, while `Game.phase` is `RUNNING` and the world is combat (or `drain_in_peaceful`), the bar drains after `drain_delay` without a hit. Draining to 0 with a multiplier above 1, or `player_damaged`, breaks the combo. It announces `score_changed`, `combo_changed`, `combo_raised`, and `combo_broken`; on `run_started` it announces its starting values. `Run` keeps `score` and `best_multiplier` from those events and copies them into the run result. `ScoreConfig` holds the tunables (see [tuning.md](tuning.md)).
+
 ## ActorSprite
 
 `ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
@@ -167,6 +171,7 @@ Run                  composition root, script run.gd
   WorldShift
   Spawner
   Economy
+  Score
   Results          CanvasLayer, hidden until run_ended
   DebugOverlay
   StateMachine     Starting, Running, Ended

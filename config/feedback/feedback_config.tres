@@ -149,10 +149,25 @@ script = ExtResource("2_entry")
 id = &"enemy_death"
 effects = Array[ExtResource("5_effect")]([SubResource("Resource_enemy_death_shake"), SubResource("Resource_enemy_death_burst")])
 
+[sub_resource type="Resource" id="Resource_combo_up_shake"]
+script = ExtResource("3_shake")
+trauma = 0.1
+
+[sub_resource type="Resource" id="Resource_combo_up_flash"]
+script = ExtResource("7_screen_flash")
+color = Color(1, 0.9, 0.4, 0.15)
+duration = 0.08
+
+[sub_resource type="Resource" id="Resource_combo_up"]
+script = ExtResource("2_entry")
+id = &"combo_up"
+effects = Array[ExtResource("5_effect")]([SubResource("Resource_combo_up_shake"), SubResource("Resource_combo_up_flash")])
+
 [resource]
 script = ExtResource("1_cfg")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied"), SubResource("Resource_player_hurt"), SubResource("Resource_player_death"), SubResource("Resource_hit_light"), SubResource("Resource_enemy_death")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied"), SubResource("Resource_player_hurt"), SubResource("Resource_player_death"), SubResource("Resource_hit_light"), SubResource("Resource_enemy_death"), SubResource("Resource_combo_up")])
 bindings = Dictionary[StringName, StringName]({
+&"combo_raised": &"combo_up",
 &"enemy_killed": &"enemy_death",
 &"hit_landed": &"hit_light",
 &"player_damaged": &"player_hurt",

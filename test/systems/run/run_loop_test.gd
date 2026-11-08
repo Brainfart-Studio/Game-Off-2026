@@ -124,3 +124,15 @@ func test_kills_follow_enemy_killed_into_the_result() -> void:
 	Events.enemy_killed.emit(null, data, info)
 	assert_int(_run.kills).is_equal(2)
 	assert_int(_run.build_result().kills).is_equal(2)
+
+
+func test_score_and_best_multiplier_appear_in_the_result() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	Events.score_changed.emit(120)
+	Events.combo_changed.emit(0.5, 3)
+	Events.combo_changed.emit(0.0, 1)
+	Events.score_changed.emit(250)
+	await _wait_for_phase(Game.Phase.ENDED)
+	assert_int(_results.size()).is_equal(1)
+	assert_int(_results[0].score).is_equal(250)
+	assert_int(_results[0].best_multiplier).is_equal(3)
