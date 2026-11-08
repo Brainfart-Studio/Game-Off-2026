@@ -10,6 +10,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
+| Feedback | `config/feedback/feedback_config.tres` | Screen shake, hitstop, flashes, haptics, and the events that trigger them |
 
 ## Main values
 
@@ -77,6 +78,34 @@ Drop a file at `audio/sfx/<id>.wav` and it plays when its id is bound to an even
 | `SoundDef.bus` | `SFX` (default), `UI`, or `Music` |
 
 Music files are `audio/music/music_peaceful.ogg` and `audio/music/music_combat.ogg`. Each loops. On a shift the new world's track fades in and the old one fades out over `crossfade`. A missing music file fades the current track out.
+
+**Feedback**
+
+Feedback is game feel: shake, hitstop, flashes, rumble, and effect sprites. An entry is a named list of effects. A binding maps an event key to an entry id. The key is an event name from [events.md](events.md). World events also take `.peaceful` or `.combat`, and the variant wins over the plain name. Add an entry in `entries`, then add a row in `bindings`. Gameplay code does not change.
+
+| Value | Effect |
+|---|---|
+| `shake_max_offset` | Largest camera offset at full trauma (px) |
+| `shake_decay` | Trauma lost per second. Higher ends shake sooner |
+| `shake_noise_speed` | How fast the shake jitters |
+| `bindings` | Event key to entry id |
+
+Shake strength follows trauma squared, so small hits stay subtle and big ones kick hard. Hitstop and flashes run on real time, so a hitstop never stretches itself.
+
+| Effect | Value | Effect |
+|---|---|---|
+| `ShakeEffect` | `trauma` | Trauma added, 0 to 1 |
+| `HitstopEffect` | `duration` | Real seconds of slowdown |
+| `HitstopEffect` | `time_scale` | Game speed during the slowdown. 0 is frozen |
+| `ScreenFlashEffect` | `color` | Flash color. Alpha is the starting strength |
+| `ScreenFlashEffect` | `duration` | Fade-out seconds |
+| `SpriteFlashEffect` | `color`, `duration` | Flash of the event's target sprite. The target needs a `flash` method |
+| `HapticsEffect` | `weak`, `strong` | Motor strength, 0 to 1 |
+| `HapticsEffect` | `duration` | Rumble seconds |
+| `SpawnFxEffect` | `animation` | One-shot sprite. Plays at the event's position and frees itself |
+| `SpawnFxEffect` | `offset` | Shift from that position (px) |
+
+Entries now: `shift` (small shake and rumble, on `world_shift_started`) and `shift_denied` (light rumble, on `shift_denied`).
 
 ## Editing in the inspector
 

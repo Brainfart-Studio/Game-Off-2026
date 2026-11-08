@@ -42,6 +42,14 @@ Each world has a `Content` node. `Arena` registers both with `Game.register_cont
 
 Gameplay code never calls `Audio`. It emits on `Events`, and `Audio` plays the sound bound to that event in `sound_config.tres`. `EventRouter` connects the bound events and looks up the binding, trying the world variant first. Modules that need sound add a binding, not a call.
 
+## Feedback
+
+`Feedback` (`scenes/feedback/feedback.tscn`, autoload after `Audio`) plays game feel: camera shake, hitstop, screen flash, sprite flash, gamepad rumble, and one-shot effect sprites. An effect is a `FeedbackEffect` resource, a `FeedbackEntry` is a named list of effects, and `feedback_config.tres` binds events to entries. New effects are new resource classes, not new code paths.
+
+Gameplay code never calls `Feedback`. It emits on `Events`, and `Feedback` plays the entry bound to that event, using the same `EventRouter` keys as `Audio`. The event's first `Node2D` or `Vector2` argument becomes the effect position (`FeedbackContext`).
+
+Toggles: `enabled` blocks everything, `shake_enabled` blocks shake, `flash_enabled` blocks screen flashes. Tests that run combat physics turn `enabled` off and restore it. Hitstop changes `Engine.time_scale` and restores it on real time. `Feedback.reset()` puts time, shake, and flash back to normal.
+
 ## Configs
 
 Every tunable lives in a `GameConfig` resource under `config/`, edited in the inspector. Scripts read the values and hold no magic numbers. A config can override `validate()` to return warnings. See [tuning.md](tuning.md).
