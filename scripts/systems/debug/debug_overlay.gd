@@ -34,6 +34,8 @@ func _process(_delta: float) -> void:
 	else:
 		lines.append("no player")
 	lines.append("world: %s" % World.Id.keys()[Game.world])
+	lines.append("run: %s" % Game.Phase.keys()[Game.phase])
+	lines.append("time: %.1f" % Game.time_left)
 	if _shift != null:
 		lines.append("shift cooldown: %.2f" % _shift.cooldown_left)
 	lines.append("fps: %d" % Engine.get_frames_per_second())
