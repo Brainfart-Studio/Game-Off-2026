@@ -24,3 +24,27 @@ func test_no_arguments_gives_an_empty_context() -> void:
 	assert_object(context.target).is_null()
 	assert_bool(context.has_position).is_false()
 	assert_vector(context.position).is_equal(Vector2.ZERO)
+
+
+func test_damage_info_gives_target_and_position_before_other_arguments() -> void:
+	var hit_target: Node2D = auto_free(Node2D.new())
+	var other: Node2D = auto_free(Node2D.new())
+	add_child(hit_target)
+	add_child(other)
+	other.global_position = Vector2(90, 90)
+	var info: DamageInfo = DamageInfo.new()
+	info.target = hit_target
+	info.position = Vector2(5, 6)
+	var context: FeedbackContext = FeedbackContext.from_args(&"hit", [info, other])
+	assert_object(context.target).is_same(hit_target)
+	assert_vector(context.position).is_equal(Vector2(5, 6))
+	assert_bool(context.has_position).is_true()
+
+
+func test_damage_info_without_target_still_gives_position() -> void:
+	var info: DamageInfo = DamageInfo.new()
+	info.position = Vector2(5, 6)
+	var context: FeedbackContext = FeedbackContext.from_args(&"hit", [info])
+	assert_object(context.target).is_null()
+	assert_vector(context.position).is_equal(Vector2(5, 6))
+	assert_bool(context.has_position).is_true()
