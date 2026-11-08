@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/camera/game_camera.tscn" id="4_camera"]
 [ext_resource type="PackedScene" path="res://scenes/shift/world_shift.tscn" id="5_shift"]
 [ext_resource type="PackedScene" path="res://scenes/ui/results.tscn" id="12_results"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/spawner.tscn" id="13_spawner"]
 [ext_resource type="Script" path="res://scripts/systems/run/run.gd" id="6_run"]
 [ext_resource type="Resource" path="res://config/run/run_config.tres" id="7_cfg"]
 [ext_resource type="Script" path="res://scripts/core/state_machine.gd" id="8_machine"]
@@ -24,6 +25,8 @@ config = ExtResource("7_cfg")
 [node name="GameCamera" parent="." instance=ExtResource("4_camera")]
 
 [node name="WorldShift" parent="." instance=ExtResource("5_shift")]
+
+[node name="Spawner" parent="." instance=ExtResource("13_spawner")]
 
 [node name="Results" parent="." instance=ExtResource("12_results")]
 

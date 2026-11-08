@@ -31,6 +31,7 @@ script = ExtResource("1_cfg")
 sounds = Array[ExtResource("2_def")]([SubResource("Resource_step"), SubResource("Resource_swing"), SubResource("Resource_hit_enemy")])
 bindings = Dictionary[StringName, StringName]({
 &"enemy_killed": &"enemy_death",
+&"enemy_spawn_warned": &"enemy_spawn_warning",
 &"enemy_spawned": &"enemy_spawn",
 &"hit_landed": &"hit_enemy",
 &"player_attacked": &"attack_swing",

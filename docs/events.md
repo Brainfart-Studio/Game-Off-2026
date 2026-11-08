@@ -19,6 +19,7 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `player_died` | none | `Player` | `Audio`, `Feedback` (bound entries) | The player's health reached 0. Fires once, before `player_damaged` of the same hit |
 | `hit_landed` | `info: DamageInfo` | `Enemy` | `Audio`, `Feedback` (bound entries) | An enemy took a hit. Fires also on the killing hit, after `enemy_killed` |
 | `enemy_spawned` | `enemy: Node2D` | `Enemy` | `Audio` (bound sounds) | An enemy finishes `_ready`, with its data set |
+| `enemy_spawn_warned` | `position: Vector2` | `SpawnTelegraph` | `Audio` (bound sounds) | A spawn telegraph appears, before the enemy does. `position` is where the enemy will stand |
 | `enemy_killed` | `enemy: Node2D`, `data: EnemyData`, `info: DamageInfo` | `EnemyDie` state | `Run` (kill count), `Audio`, `Feedback` (bound entries) | An enemy enters `Die`. Fires once, before `hit_landed` of the same hit |
 | `run_started` | none | `RunStarting` state | `Feedback` (reset) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
 | `time_changed` | `left: float` | `RunStarting`, `RunRunning` | nobody yet | Once when the run starts, then each time the whole seconds left change, and at 0 |

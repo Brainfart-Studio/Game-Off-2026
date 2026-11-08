@@ -4,3 +4,5 @@ class_name Groups
 const PLAYER := &"player"
 const WORLD_SHIFT := &"world_shift"
 const ENEMY := &"enemy"
+const ENEMY_SPAWN := &"enemy_spawn"
+const SPAWN_TELEGRAPH := &"spawn_telegraph"
