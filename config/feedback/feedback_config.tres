@@ -9,6 +9,9 @@
 [ext_resource type="Script" path="res://scripts/systems/feedback/effects/screen_flash_effect.gd" id="7_screen_flash"]
 [ext_resource type="Script" path="res://scripts/systems/feedback/effects/sprite_flash_effect.gd" id="8_sprite_flash"]
 
+[ext_resource type="Script" path="res://scripts/systems/feedback/effects/spawn_fx_effect.gd" id="9_spawn_fx"]
+[ext_resource type="Script" path="res://scripts/core/animation_def.gd" id="10_def"]
+
 [sub_resource type="Resource" id="Resource_shift_shake"]
 script = ExtResource("3_shake")
 trauma = 0.12
@@ -85,10 +88,73 @@ script = ExtResource("2_entry")
 id = &"player_death"
 effects = Array[ExtResource("5_effect")]([SubResource("Resource_death_shake"), SubResource("Resource_death_screen_flash"), SubResource("Resource_death_haptics")])
 
+[sub_resource type="Resource" id="Resource_hit_spark"]
+script = ExtResource("10_def")
+id = &"fx_hit_spark"
+path = "res://art/fx/fx_hit_spark.png"
+frame_size = Vector2i(32, 32)
+frames = 4
+fps = 24.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_hit_light_hitstop"]
+script = ExtResource("6_hitstop")
+duration = 0.06
+time_scale = 0.05
+
+[sub_resource type="Resource" id="Resource_hit_light_shake"]
+script = ExtResource("3_shake")
+trauma = 0.2
+
+[sub_resource type="Resource" id="Resource_hit_light_flash"]
+script = ExtResource("8_sprite_flash")
+color = Color(1, 1, 1, 1)
+duration = 0.08
+
+[sub_resource type="Resource" id="Resource_hit_light_spark"]
+script = ExtResource("9_spawn_fx")
+animation = SubResource("Resource_hit_spark")
+
+[sub_resource type="Resource" id="Resource_hit_light_haptics"]
+script = ExtResource("4_haptics")
+weak = 0.25
+strong = 0.0
+duration = 0.06
+
+[sub_resource type="Resource" id="Resource_hit_light"]
+script = ExtResource("2_entry")
+id = &"hit_light"
+effects = Array[ExtResource("5_effect")]([SubResource("Resource_hit_light_hitstop"), SubResource("Resource_hit_light_shake"), SubResource("Resource_hit_light_flash"), SubResource("Resource_hit_light_spark"), SubResource("Resource_hit_light_haptics")])
+
+[sub_resource type="Resource" id="Resource_death_burst"]
+script = ExtResource("10_def")
+id = &"fx_death_burst"
+path = "res://art/fx/fx_death_burst.png"
+frame_size = Vector2i(32, 32)
+frames = 6
+fps = 20.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_enemy_death_shake"]
+script = ExtResource("3_shake")
+trauma = 0.3
+
+[sub_resource type="Resource" id="Resource_enemy_death_burst"]
+script = ExtResource("9_spawn_fx")
+animation = SubResource("Resource_death_burst")
+offset = Vector2(0, -12)
+
+[sub_resource type="Resource" id="Resource_enemy_death"]
+script = ExtResource("2_entry")
+id = &"enemy_death"
+effects = Array[ExtResource("5_effect")]([SubResource("Resource_enemy_death_shake"), SubResource("Resource_enemy_death_burst")])
+
 [resource]
 script = ExtResource("1_cfg")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied"), SubResource("Resource_player_hurt"), SubResource("Resource_player_death")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_shift"), SubResource("Resource_shift_denied"), SubResource("Resource_player_hurt"), SubResource("Resource_player_death"), SubResource("Resource_hit_light"), SubResource("Resource_enemy_death")])
 bindings = Dictionary[StringName, StringName]({
+&"enemy_killed": &"enemy_death",
+&"hit_landed": &"hit_light",
 &"player_damaged": &"player_hurt",
 &"player_died": &"player_death",
 &"shift_denied": &"shift_denied",
