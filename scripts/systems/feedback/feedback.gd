@@ -32,6 +32,8 @@ func _ready() -> void:
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	_last_tick = Time.get_ticks_usec()
 	EventRouter.connect_keys(Events, config.bindings.keys(), _on_event)
+	Events.run_started.connect(reset)
+	Events.run_ended.connect(_on_run_ended)
 
 
 func _exit_tree() -> void:
@@ -116,6 +118,10 @@ func reset() -> void:
 	_apply_shake(0.0)
 	_kill_flash()
 	_flash.color = Color(_flash.color, 0.0)
+
+
+func _on_run_ended(_result: RunResult) -> void:
+	reset()
 
 
 func _on_event(event: StringName, args: Array) -> void:
