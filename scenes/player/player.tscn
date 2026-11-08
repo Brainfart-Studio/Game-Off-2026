@@ -12,6 +12,9 @@
 [ext_resource type="Script" path="res://scripts/core/actor_sprite.gd" id="12_actor"]
 [ext_resource type="Script" path="res://scripts/systems/player/states/attack.gd" id="13_attack"]
 [ext_resource type="Script" path="res://scripts/systems/combat/hitbox.gd" id="14_hitbox"]
+[ext_resource type="Script" path="res://scripts/systems/player/states/hurt.gd" id="15_hurt"]
+[ext_resource type="Script" path="res://scripts/systems/combat/health.gd" id="16_health"]
+[ext_resource type="Script" path="res://scripts/systems/combat/hurtbox.gd" id="17_hurtbox"]
 [ext_resource type="Script" path="res://scripts/systems/player/player_animator.gd" id="11_anim"]
 [ext_resource type="Resource" path="res://config/player/player_config.tres" id="9_config"]
 
@@ -20,6 +23,9 @@ size = Vector2(12, 22)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
 size = Vector2(24, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(10, 20)
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
@@ -56,8 +62,25 @@ script = ExtResource("8_fall")
 [node name="Attack" type="Node" parent="StateMachine"]
 script = ExtResource("13_attack")
 
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("15_hurt")
+
 [node name="PlayerAnimator" type="Node" parent="."]
 script = ExtResource("11_anim")
+
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("stats")]
+script = ExtResource("16_health")
+stats = NodePath("../Stats")
+max_stat = &"max_health"
+iframes_stat = &"hurt_iframes"
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("17_hurtbox")
+health = NodePath("../Health")
+
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_hurt")
 
 [node name="AttackHitbox" type="Area2D" parent="."]
 script = ExtResource("14_hitbox")

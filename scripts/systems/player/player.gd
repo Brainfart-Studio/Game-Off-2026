@@ -3,12 +3,17 @@ extends CharacterBody2D
 ## Player body. Owns the physics verbs; states own the transitions.
 ## Frame order: input read, state physics_update (move, gravity, jump), move_and_slide.
 
+## Sprite opacity at the dim end of the invulnerability blink.
+const BLINK_LOW: float = 0.35
+
 @onready var stats: Stats = $Stats
 @onready var input: PlayerInput = $PlayerInput
 @onready var machine: StateMachine = $StateMachine
 @onready var visual: Node2D = $Visual
 @onready var sprite: ActorSprite = $Visual/Sprite
 @onready var attack_hitbox: Hitbox = $AttackHitbox
+@onready var health: Health = $Health
+@onready var hurtbox: Hurtbox = $Hurtbox
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -22,6 +27,8 @@ var attack_buffer_left: float = 0.0
 var current_attack: AttackData
 ## True while an attack holds the facing.
 var facing_locked: bool = false
+## The last hit the player took. Read by the Hurt state for the knockback.
+var last_hit: DamageInfo
 
 ## The player's config, read directly for non-numeric and structural values.
 var config: PlayerConfig
@@ -38,6 +45,9 @@ func _ready() -> void:
 	# The player drives the machine so the order stays: input, state, move_and_slide.
 	machine.set_physics_process(false)
 	_build_sprite()
+	health.setup()
+	hurtbox.hurt.connect(_on_hurt)
+	health.changed.connect(_on_health_changed)
 	add_to_group(Groups.PLAYER)
 
 
@@ -51,6 +61,11 @@ func spawn(at: Vector2) -> void:
 	global_position = at
 	velocity = Vector2.ZERO
 	Events.player_spawned.emit(self)
+	Events.player_health_changed.emit(health.current, health.max_value)
+
+
+func _process(_delta: float) -> void:
+	visual.modulate.a = _blink_alpha()
 
 
 func _physics_process(delta: float) -> void:
@@ -175,3 +190,22 @@ func _emit_ground_events(delta: float) -> void:
 func _build_sprite() -> void:
 	sprite.build(config.animations)
 	sprite.play_id(&"player_idle")
+
+
+## Opacity of the sprite: blinks between full and `BLINK_LOW` while invulnerable, else full.
+func _blink_alpha() -> float:
+	if not health.is_invulnerable() or health.is_dead():
+		return 1.0
+	var half_cycles: int = floori(health.invulnerable_left * stats.value(&"iframe_blink_rate") * 2.0)
+	return 1.0 if half_cycles % 2 == 0 else BLINK_LOW
+
+
+func _on_hurt(info: DamageInfo) -> void:
+	last_hit = info
+	Events.player_damaged.emit(info)
+	if not health.is_dead():
+		machine.transition_to(&"Hurt")
+
+
+func _on_health_changed(current: int, max_value: int) -> void:
+	Events.player_health_changed.emit(current, max_value)
