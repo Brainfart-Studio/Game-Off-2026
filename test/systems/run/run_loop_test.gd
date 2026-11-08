@@ -99,3 +99,18 @@ func test_timer_end_ends_the_run_once() -> void:
 	assert_int(_results.size()).is_equal(1)
 	assert_bool(_results[0].died).is_false()
 	assert_float(_results[0].time_survived).is_equal_approx(0.6, 0.05)
+
+
+func test_player_death_ends_the_run_after_the_death_delay() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	var hit: DamageInfo = DamageInfo.new()
+	hit.amount = 999
+	_run.player.health.damage(hit)
+	var left_at_death: float = Game.time_left
+	assert_bool(_run.died).is_true()
+	assert_int(Game.phase).is_equal(Game.Phase.RUNNING)
+	await _wait_for_phase(Game.Phase.ENDED)
+	assert_int(_results.size()).is_equal(1)
+	assert_bool(_results[0].died).is_true()
+	assert_float(Game.time_left).is_equal(left_at_death)
+	assert_float(_results[0].time_survived).is_equal_approx(0.6 - left_at_death, 0.001)

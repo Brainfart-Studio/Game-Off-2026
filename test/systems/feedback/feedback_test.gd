@@ -93,6 +93,13 @@ func test_reset_clears_trauma_and_time_scale() -> void:
 	assert_float(Engine.time_scale).is_equal(1.0)
 
 
+func test_run_ended_restores_time_scale_during_a_hitstop() -> void:
+	Feedback.hitstop(1.0, 0.1)
+	assert_float(Engine.time_scale).is_less(1.0)
+	Events.run_ended.emit(RunResult.new())
+	assert_float(Engine.time_scale).is_equal(1.0)
+
+
 func test_spawn_fx_effect_without_a_position_adds_nothing() -> void:
 	var effect: SpawnFxEffect = SpawnFxEffect.new()
 	effect.animation = _fx_def()
