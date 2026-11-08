@@ -4,7 +4,7 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 
 | Signal | Arguments | Emitted by | Listened to by | When it fires |
 |---|---|---|---|---|
-| `world_shift_started` | `to: World.Id` | `WorldShift` | `Audio` (bound sounds), `Feedback` (bound entries) | A shift begins, before the screen fade |
+| `world_shift_started` | `to: World.Id` | `WorldShift` | `Audio` (bound sounds), `Feedback` (bound entries), `Economy` (clears pickups) | A shift begins, before the screen fade |
 | `world_shifted` | `to: World.Id` | `WorldShift` | `ArenaWorlds`, `Game`, `Audio` (music crossfade) | The screen is covered and the world switches. Also once per run, from `WorldShift.start()`, the last step of the run setup order, with the starting world |
 | `shift_denied` | none | `WorldShift` | `Audio` (bound sounds), `Feedback` (bound entries) | Shift is pressed during the cooldown or an active shift |
 | `arena_bounds_changed` | `bounds: Rect2` | `ArenaBounds` | `GameCamera` | `ArenaBounds.setup()` runs, the first step of the run setup order. Fires immediately, in the same frame. Carries the arena rect in global pixels |
@@ -20,8 +20,10 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `hit_landed` | `info: DamageInfo` | `Enemy` | `Audio`, `Feedback` (bound entries) | An enemy took a hit. Fires also on the killing hit, after `enemy_killed` |
 | `enemy_spawned` | `enemy: Node2D` | `Enemy` | `Audio` (bound sounds) | An enemy finishes `_ready`, with its data set |
 | `enemy_spawn_warned` | `position: Vector2` | `SpawnTelegraph` | `Audio` (bound sounds) | A spawn telegraph appears, before the enemy does. `position` is where the enemy will stand |
-| `enemy_killed` | `enemy: Node2D`, `data: EnemyData`, `info: DamageInfo` | `EnemyDie` state | `Run` (kill count), `Audio`, `Feedback` (bound entries) | An enemy enters `Die`. Fires once, before `hit_landed` of the same hit |
-| `run_started` | none | `RunStarting` state | `Feedback` (reset) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
+| `enemy_killed` | `enemy: Node2D`, `data: EnemyData`, `info: DamageInfo` | `EnemyDie` state | `Run` (kill count), `Economy` (drops), `Audio`, `Feedback` (bound entries) | An enemy enters `Die`. Fires once, before `hit_landed` of the same hit |
+| `currency_collected` | `amount: int` | `Pickup` | `Economy`, `Audio` (bound sounds) | A pickup is collected, by the magnet or by touching the player. Fires once per pickup |
+| `wallet_changed` | `currency: int` | `Economy` | nobody yet | The wallet changed, and once when the run starts |
+| `run_started` | none | `RunStarting` state | `Feedback` (reset), `Economy` | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
 | `time_changed` | `left: float` | `RunStarting`, `RunRunning` | nobody yet | Once when the run starts, then each time the whole seconds left change, and at 0 |
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds) | Once per second from `warning_time` seconds left down to 1, when that second begins |
 | `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset), `Results` | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
