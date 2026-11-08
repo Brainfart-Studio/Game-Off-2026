@@ -10,6 +10,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Moveset | `config/player/moveset.tres` | The player's four attacks and their timing, hitbox, and knockback |
 | Walker | `config/enemies/walker.tres` | The walker's health, speeds, senses, contact hit, rewards, body size, animations |
 | Spawner | `config/enemies/spawn_config.tres` | Which enemies spawn, how often, how many at once, and the warning before each |
+| Economy | `config/economy/economy_config.tres` | Starting currency, how drops split and pop, how pickups wait, fly, blink, and expire |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
@@ -55,6 +56,12 @@ Units are pixels and seconds.
 | `moveset` | The `Moveset` resource the player attacks with |
 
 Upgrades change `attack_speed`, `attack_reach`, `attack_damage`, `max_health`, and the other values through `Stats`, never by editing the config.
+
+**Player economy**
+
+| Value | Effect |
+|---|---|
+| `magnet_radius` | Radius within which the player pulls in currency pickups (px). Upgrades change it through `Stats` |
 
 **Player moveset**
 
@@ -203,6 +210,25 @@ A `SpawnConfig` config drives the spawner. Run progress (time elapsed over the r
 | `telegraph_animation` | Animation of the warning |
 
 Spawn points are `Marker2D` nodes in the `enemy_spawn` group, under `CombatWorld/SpawnPoints` in the arena.
+
+**Economy**
+
+An `EconomyConfig` config drives currency. A killed enemy drops its `currency_drop` split into at most `max_pickups_per_drop` pickups, each worth a share of the total. A pickup pops out, waits `pickup_delay`, then flies to the player's magnet or is collected by touching the player.
+
+| Value | Effect |
+|---|---|
+| `start_currency` | Currency at the start of a run |
+| `max_pickups_per_drop` | A drop never splits into more pickups than this. The total stays the same |
+| `pop_speed` | Pop range when a pickup drops: x is the sideways range, y the upward range (px/s) |
+| `pop_damping` | How fast the pop slows down (1/s) |
+| `pickup_delay` | Seconds after dropping before a pickup can be attracted or collected |
+| `fly_accel`, `max_fly_speed` | Acceleration and top speed toward the magnet (px/s^2, px/s) |
+| `collect_distance` | Distance to the magnet at which a pickup is collected (px) |
+| `lifetime` | Seconds before an uncollected pickup disappears |
+| `blink_time`, `blink_rate` | Seconds at the end of the lifetime during which a pickup blinks, and blinks per second |
+| `pickup_animation` | Animation of a pickup |
+
+Uncollected pickups are cleared when the world shifts.
 
 **UI**
 
