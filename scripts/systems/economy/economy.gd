@@ -16,6 +16,8 @@ func _ready() -> void:
 	config.check()
 	currency = config.start_currency
 	Events.enemy_killed.connect(_on_enemy_killed)
+	Events.currency_collected.connect(_on_currency_collected)
+	Events.run_started.connect(_on_run_started)
 
 
 ## Splits `amount` into `count` parts that sum to `amount`. The remainder goes one each to the
@@ -36,6 +38,15 @@ func _on_enemy_killed(enemy: Node2D, data: EnemyData, _info: DamageInfo) -> void
 	if data == null or data.currency_drop <= 0 or not is_instance_valid(enemy):
 		return
 	_drop(enemy.global_position + DROP_OFFSET, data.currency_drop)
+
+
+func _on_currency_collected(amount: int) -> void:
+	currency += amount
+	Events.wallet_changed.emit(currency)
+
+
+func _on_run_started() -> void:
+	Events.wallet_changed.emit(currency)
 
 
 func _drop(at: Vector2, amount: int) -> void:
