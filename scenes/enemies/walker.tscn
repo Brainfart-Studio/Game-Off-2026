@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/enemy_base.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/systems/enemies/states/ground_patrol.gd" id="2_patrol"]
+[ext_resource type="Script" path="res://scripts/systems/enemies/states/ground_chase.gd" id="3_chase"]
+
+[node name="Walker" instance=ExtResource("1_base")]
+
+[node name="StateMachine" parent="." index="5" node_paths=PackedStringArray("initial_state")]
+initial_state = NodePath("Patrol")
+
+[node name="Patrol" type="Node" parent="StateMachine" index="2"]
+script = ExtResource("2_patrol")
+
+[node name="Chase" type="Node" parent="StateMachine" index="3"]
+script = ExtResource("3_chase")
