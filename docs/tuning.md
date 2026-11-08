@@ -9,6 +9,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 | Player | `config/player/player_config.tres` | Movement, jump, gravity, body size, animations |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
+| Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
 
 ## Main values
 
@@ -31,6 +32,7 @@ Units are pixels and seconds.
 | `max_fall_speed` | Terminal fall speed |
 | `apex_threshold`, `apex_gravity_multiplier`, `apex_speed_multiplier` | The floaty band at the top of a jump |
 | `body_size` | Collision box size |
+| `step_interval` | Time between footstep sounds while running |
 
 **Camera**
 
@@ -50,6 +52,31 @@ Units are pixels and seconds.
 | `fade_out`, `hold`, `fade_in` | Fade to cover, time covered, fade back |
 | `fade_color` | Color of the cover |
 | `transition_trans` | Easing curve of the fades |
+
+**Sound**
+
+Drop a file at `audio/sfx/<id>.wav` and it plays when its id is bound to an event. No other setup is needed. A missing file stays silent.
+
+- Variations: add `<id>_2.wav`, `<id>_3.wav`, and so on beside it. One is picked at random each time.
+- Per-sound settings are a `SoundDef` in `sounds`. A sound with no def uses the defaults.
+- Bindings map an event key to a sound id. The key is an event name from [events.md](events.md). World events also take `.peaceful` or `.combat`, for example `world_shift_started.combat`. The variant wins over the plain name.
+
+| Value | Effect |
+|---|---|
+| `sfx_dir`, `music_dir` | Folders searched for sounds and music |
+| `voices` | Sounds that can play at once across the whole game |
+| `music_volume_db` | Music volume |
+| `crossfade` | Seconds to fade between world music tracks |
+| `sync_music_layers` | On: the new track starts at the old track's position. Use for two layers of the same length |
+| `SoundDef.id` | Sound id, also the file name |
+| `SoundDef.path` | Overrides the file path. Empty uses `<sfx_dir>/<id>.wav` |
+| `SoundDef.volume_db` | Volume of this sound |
+| `SoundDef.pitch_min`, `pitch_max` | Random pitch range per play |
+| `SoundDef.max_voices` | Copies of this sound that can play at once |
+| `SoundDef.cooldown` | Minimum seconds between two starts of this sound |
+| `SoundDef.bus` | `SFX` (default), `UI`, or `Music` |
+
+Music files are `audio/music/music_peaceful.ogg` and `audio/music/music_combat.ogg`. Each loops. On a shift the new world's track fades in and the old one fades out over `crossfade`. A missing music file fades the current track out.
 
 ## Editing in the inspector
 

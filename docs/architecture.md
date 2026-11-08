@@ -8,7 +8,7 @@ Godot 4.7.2, GDScript, GL Compatibility renderer, web export.
 res://
   scripts/
     core/        shared code: Events, Stats helpers, AssetLoader, Layers, Display, Groups, World
-    systems/     one folder per module: player, shift, camera, arena, input, debug, run
+    systems/     one folder per module: player, shift, camera, arena, input, debug, run, audio
   scenes/        main.tscn and one scene folder per module
   config/        .tres config resources (all tuning)
   art/           Loten
@@ -36,6 +36,12 @@ The debug overlay is the exception: it may read modules, found through groups.
 
 Each world has a `Content` node. `Arena` registers both with `Game.register_content`, and anything spawned for a world is added under `Game.content_parent(world)`. Combat content stays under `CombatWorld/Content`, so the freeze applies to it.
 
+## Audio
+
+`Audio` (`scenes/audio/audio.tscn`, autoload after `Game`) plays every sound. It keeps a pool of players, finds files by naming convention (`audio/sfx/<id>.wav`, see [tuning.md](tuning.md)), and runs two music players that crossfade on `world_shifted`. The buses are `Master`, `Music`, `SFX`, `UI` (`default_bus_layout.tres`).
+
+Gameplay code never calls `Audio`. It emits on `Events`, and `Audio` plays the sound bound to that event in `sound_config.tres`. `EventRouter` connects the bound events and looks up the binding, trying the world variant first. Modules that need sound add a binding, not a call.
+
 ## Configs
 
 Every tunable lives in a `GameConfig` resource under `config/`, edited in the inspector. Scripts read the values and hold no magic numbers. A config can override `validate()` to return warnings. See [tuning.md](tuning.md).
@@ -53,6 +59,7 @@ These are classes with static functions, not autoloads.
 | `Display` | View size from project settings. Scripts never hard-code the resolution |
 | `Groups` | Node group names, used for lookups |
 | `Actions` | Input action names. Scripts never use action strings or raw keys |
+| `EventRouter` | Connects config-driven event keys to one handler and finds the binding for an emitted event |
 
 ## Missing assets
 
