@@ -48,6 +48,7 @@ func _ready() -> void:
 	health.setup()
 	hurtbox.hurt.connect(_on_hurt)
 	health.changed.connect(_on_health_changed)
+	health.died.connect(_on_died)
 	add_to_group(Groups.PLAYER)
 
 
@@ -209,3 +210,9 @@ func _on_hurt(info: DamageInfo) -> void:
 
 func _on_health_changed(current: int, max_value: int) -> void:
 	Events.player_health_changed.emit(current, max_value)
+
+
+## Health emits `died` before the hurtbox emits `hurt`, so Dead is entered before `_on_hurt` runs.
+func _on_died(_info: DamageInfo) -> void:
+	machine.transition_to(&"Dead")
+	Events.player_died.emit()

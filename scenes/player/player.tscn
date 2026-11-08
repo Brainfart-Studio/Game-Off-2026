@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/systems/combat/hitbox.gd" id="14_hitbox"]
 [ext_resource type="Script" path="res://scripts/systems/player/states/hurt.gd" id="15_hurt"]
 [ext_resource type="Script" path="res://scripts/systems/combat/health.gd" id="16_health"]
+[ext_resource type="Script" path="res://scripts/systems/player/states/dead.gd" id="18_dead"]
 [ext_resource type="Script" path="res://scripts/systems/combat/hurtbox.gd" id="17_hurtbox"]
 [ext_resource type="Script" path="res://scripts/systems/player/player_animator.gd" id="11_anim"]
 [ext_resource type="Resource" path="res://config/player/player_config.tres" id="9_config"]
@@ -64,6 +65,9 @@ script = ExtResource("13_attack")
 
 [node name="Hurt" type="Node" parent="StateMachine"]
 script = ExtResource("15_hurt")
+
+[node name="Dead" type="Node" parent="StateMachine"]
+script = ExtResource("18_dead")
 
 [node name="PlayerAnimator" type="Node" parent="."]
 script = ExtResource("11_anim")
