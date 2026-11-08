@@ -29,6 +29,7 @@ func _ready() -> void:
 	Game.run_duration = config.duration
 	Game.time_left = config.duration
 	Events.player_died.connect(_on_player_died)
+	Events.run_restart_requested.connect(restart)
 	machine.transition_to(&"Starting")
 
 
@@ -41,6 +42,12 @@ func build_result() -> RunResult:
 	result.time_survived = Game.run_duration - Game.time_left
 	result.died = died
 	return result
+
+
+## Unpauses and reloads the run scene. Every module starts fresh.
+func restart() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 
 func _on_player_died() -> void:
