@@ -51,14 +51,24 @@ extends GameConfig
 @export var animations: Array[AnimationDef] = []
 
 
+## Gravity (px/s^2) that reaches `height` in `time`.
+static func gravity_for(height: float, time: float) -> float:
+	return 2.0 * height / (time * time)
+
+
+## Launch speed (px/s) that reaches `height` in `time`.
+static func velocity_for(height: float, time: float) -> float:
+	return 2.0 * height / time
+
+
 ## Gravity (px/s^2) that reaches `jump_height` in `time_to_apex`.
 func jump_gravity() -> float:
-	return 2.0 * jump_height / (time_to_apex * time_to_apex)
+	return gravity_for(jump_height, time_to_apex)
 
 
 ## Launch speed (px/s) that reaches `jump_height` in `time_to_apex`.
 func jump_velocity() -> float:
-	return 2.0 * jump_height / time_to_apex
+	return velocity_for(jump_height, time_to_apex)
 
 
 func validate() -> PackedStringArray:
