@@ -18,6 +18,8 @@ shape = SubResource("CircleShape2D_pickup")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
 script = ExtResource("2_actor")
+preview_config = "res://config/economy/economy_config.tres"
+preview_animation = &"pickup_currency"
 
 [node name="AssetLabel" type="Label" parent="Visual"]
 offset_left = -6.0

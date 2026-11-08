@@ -105,6 +105,8 @@ shape = SubResource("CircleShape2D_magnet")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
 script = ExtResource("12_actor")
+preview_config = "res://config/player/player_config.tres"
+preview_animation = &"player_idle"
 
 [node name="AssetLabel" type="Label" parent="Visual"]
 offset_left = -16.0
