@@ -33,6 +33,22 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2
 
+[node name="Currency" type="HBoxContainer" parent="Root/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="CurrencyIcon" type="TextureRect" parent="Root/TopLeft/Currency"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+
+[node name="CurrencyAmount" type="Label" parent="Root/TopLeft/Currency"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="TopCenter" type="VBoxContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 5

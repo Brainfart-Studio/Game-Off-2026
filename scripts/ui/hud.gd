@@ -5,9 +5,11 @@ extends CanvasLayer
 const WORLD_NAMES := {World.Id.PEACEFUL: "PEACEFUL", World.Id.COMBAT: "COMBAT"}
 const HEALTH_FULL_PATH := "res://art/ui/ui_health_full.png"
 const HEALTH_EMPTY_PATH := "res://art/ui/ui_health_empty.png"
+const CURRENCY_ICON_PATH := "res://art/ui/ui_currency_icon.png"
 const COMBO_FRAME_PATH := "res://art/ui/ui_combo_frame.png"
 const COMBO_FILL_PATH := "res://art/ui/ui_combo_fill.png"
 const PIP_SIZE := Vector2i(12, 12)
+const CURRENCY_ICON_SIZE := Vector2i(12, 12)
 const COMBO_SIZE := Vector2i(96, 10)
 const SECONDS_PER_MINUTE := 60
 const TIME_FORMAT := "%d:%02d"
@@ -20,6 +22,8 @@ var _pip_empty: Texture2D
 
 @onready var _root: Control = %Root
 @onready var _health: HBoxContainer = %Health
+@onready var _currency_icon: TextureRect = %CurrencyIcon
+@onready var _currency: Label = %CurrencyAmount
 @onready var _timer: Label = %Timer
 @onready var _world: Label = %World
 @onready var _score: Label = %Score
@@ -38,15 +42,20 @@ func _ready() -> void:
 	_root.theme = UiTheme.build(config)
 	_pip_full = AssetLoader.texture(HEALTH_FULL_PATH, PIP_SIZE, "ui_health_full")
 	_pip_empty = AssetLoader.texture(HEALTH_EMPTY_PATH, PIP_SIZE, "ui_health_empty")
+	_currency_icon.texture = AssetLoader.texture(
+		CURRENCY_ICON_PATH, CURRENCY_ICON_SIZE, "ui_currency_icon"
+	)
 	_timer.text = format_time(0.0)
 	_combo.texture_under = AssetLoader.texture(COMBO_FRAME_PATH, COMBO_SIZE, "ui_combo_frame")
 	_combo.texture_progress = AssetLoader.texture(COMBO_FILL_PATH, COMBO_SIZE, "ui_combo_fill")
 	_on_world_shifted(Game.world)
+	_on_wallet_changed(0)
 	_on_score_changed(0)
 	_on_combo_changed(0.0, 1)
 	Events.player_health_changed.connect(_on_player_health_changed)
 	Events.time_changed.connect(_on_time_changed)
 	Events.world_shifted.connect(_on_world_shifted)
+	Events.wallet_changed.connect(_on_wallet_changed)
 	Events.score_changed.connect(_on_score_changed)
 	Events.combo_changed.connect(_on_combo_changed)
 
@@ -69,6 +78,10 @@ func _on_time_changed(left: float) -> void:
 func _on_world_shifted(to: World.Id) -> void:
 	var world_name: String = WORLD_NAMES.get(to, "")
 	_world.text = world_name
+
+
+func _on_wallet_changed(currency: int) -> void:
+	_currency.text = str(currency)
 
 
 func _on_score_changed(score: int) -> void:
