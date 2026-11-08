@@ -18,6 +18,7 @@ func _ready() -> void:
 	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.currency_collected.connect(_on_currency_collected)
 	Events.run_started.connect(_on_run_started)
+	Events.world_shift_started.connect(_on_world_shift_started)
 
 
 ## Splits `amount` into `count` parts that sum to `amount`. The remainder goes one each to the
@@ -47,6 +48,11 @@ func _on_currency_collected(amount: int) -> void:
 
 func _on_run_started() -> void:
 	Events.wallet_changed.emit(currency)
+
+
+func _on_world_shift_started(_to: World.Id) -> void:
+	for pickup: Node in get_tree().get_nodes_in_group(Groups.PICKUP):
+		pickup.queue_free()
 
 
 func _drop(at: Vector2, amount: int) -> void:
