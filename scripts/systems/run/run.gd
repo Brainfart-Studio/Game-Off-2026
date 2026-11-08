@@ -9,7 +9,7 @@ extends Node2D
 
 ## True once the player has died this run.
 var died: bool = false
-## Tallies for the results. Their owners fill them in B8 and B11.
+## Tallies for the results. `kills` follows `enemy_killed`; the score tally is filled by B11.
 var score: int = 0
 var kills: int = 0
 var best_multiplier: int = 1
@@ -29,6 +29,7 @@ func _ready() -> void:
 	Game.run_duration = config.duration
 	Game.time_left = config.duration
 	Events.player_died.connect(_on_player_died)
+	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.run_restart_requested.connect(restart)
 	machine.transition_to(&"Starting")
 
@@ -52,3 +53,7 @@ func restart() -> void:
 
 func _on_player_died() -> void:
 	died = true
+
+
+func _on_enemy_killed(_enemy: Node2D, _data: EnemyData, _info: DamageInfo) -> void:
+	kills += 1
