@@ -8,7 +8,7 @@ Godot 4.7.2, GDScript, GL Compatibility renderer, web export.
 res://
   scripts/
     core/        shared code: Events, Stats helpers, AssetLoader, Layers, Display, Groups, World
-    systems/     one folder per module: player, shift, camera, arena, input, debug, run, audio
+    systems/     one folder per module: player, enemies, shift, camera, arena, input, debug, run, audio
     ui/          screens and widgets: results, initials entry, high score list, theme
   scenes/        main.tscn and one scene folder per module
   config/        .tres config resources (all tuning)
@@ -64,6 +64,16 @@ Combat pieces live in `scripts/systems/combat/` and know nothing about the playe
 **Hurt side emits events.** `Hurtbox` and `Health` signals stay local. The owner of the hurt side listens to them and emits the `Events` signal, passing the `DamageInfo` first. `Feedback` and `Audio` then play `info.feedback` and `info.sound` when they are set, and the event's own binding otherwise. The event still needs a binding row so the services listen to it.
 
 **Attacks.** An `AttackData` config holds one attack's hitbox, timing, damage, knockback, and effects. A `Moveset` picks the attack by stance and input direction, falling back from air to ground to `ground_neutral`.
+
+## Enemies
+
+Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scene: an `Enemy` body with `Stats`, `Health`, a `Hurtbox` and a `ContactHitbox` on the enemy team, a `StateMachine` holding `Hurt` and `Die`, an `EnemyAnimator`, and a `Visual` with the sprite and a ledge ray. Each enemy type is a scene that inherits the base and adds its own states, such as `walker.tscn` with `Patrol` and `Chase`, and an `EnemyData` config beside it.
+
+**Data is set by the spawner.** `Enemy.data` is set before the enemy enters the tree and is never saved in a scene, which would make a resource cycle with `EnemyData.scene`. `_ready` gives `data` to `Stats`, sizes the body, hurtbox, and contact box from `body_size`, and emits `enemy_spawned`.
+
+**Frame order.** Like the player, the enemy drives its machine: state physics, then `move_and_slide`. States call the enemy's verbs (`walk`, `stop`, `apply_gravity`, `at_wall`, `at_ledge`, `target_in`) and own the transitions.
+
+**Hit, hurt, and death.** A hit reaches `Hurtbox`; the enemy emits `hit_landed` and enters `Hurt`, which applies the knockback less `knockback_resistance` and returns to `resume_state`. When `Health` empties, the enemy enters `Die` first: it turns both boxes off, emits `enemy_killed`, and frees itself after `death_time`, counted in physics. `Run` counts kills from `enemy_killed`. `Audio` and `Feedback` play from bindings.
 
 ## ActorSprite
 

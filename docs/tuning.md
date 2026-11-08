@@ -8,6 +8,7 @@ All tunable values live in config resources. No tuning value is hard-coded in a 
 |---|---|---|
 | Player | `config/player/player_config.tres` | Movement, jump, gravity, body size, combat, animations |
 | Moveset | `config/player/moveset.tres` | The player's four attacks and their timing, hitbox, and knockback |
+| Walker | `config/enemies/walker.tres` | The walker's health, speeds, senses, contact hit, rewards, body size, animations |
 | Camera | `config/camera/camera_config.tres` | Follow smoothing, look-ahead, drag margins |
 | Shift | `config/shift/shift_config.tres` | World shift cooldown and screen fade |
 | Sound | `config/audio/sound_config.tres` | Sound files, per-sound settings, event bindings, world music |
@@ -162,6 +163,28 @@ An `AttackData` config describes one attack. A `Moveset` config holds up to eigh
 | `pogo_velocity` | Upward speed the attacker gets on a hit (px/s) |
 | `hit_feedback`, `hit_sound` | Feedback entry id and sound id played on a hit |
 | `tags` | Labels passed to the damage info |
+
+**Enemies**
+
+An `EnemyData` config describes one enemy type. `config/enemies/walker.tres` is the walker. The spawner sets `data` on the enemy before it enters the tree.
+
+| Value | Effect |
+|---|---|
+| `id`, `scene` | Enemy id (also the animation prefix: `<id>_idle`, `<id>_run`, `<id>_hurt`, `<id>_death`) and the scene the spawner makes |
+| `max_health` | Hit points |
+| `knockback_resistance` | Share of knockback ignored, 0 to 1 |
+| `hurt_stun` | Seconds the enemy cannot act after a hit |
+| `death_time` | Seconds from death until it is removed |
+| `move_speed`, `chase_speed` | Patrol and chase speed (px/s) |
+| `accel` | Acceleration toward the target speed (px/s^2) |
+| `gravity`, `max_fall_speed` | Gravity (px/s^2) and terminal fall speed (px/s) |
+| `detect_range` | Horizontal and vertical distance at which it spots the player (px) |
+| `lose_range` | Distance beyond which a chasing enemy gives up (px) |
+| `contact_damage` | Health the player loses on touching it |
+| `contact_knockback_force`, `contact_knockback_angle` | Knockback on the player (px/s) and its angle (degrees, 0 away from the enemy, -90 up) |
+| `currency_drop`, `score_value` | Currency dropped and score given on a kill. Used by later branches |
+| `body_size` | Collision and hurt box size, feet at the origin (px). The contact box is 80% of it |
+| `animations` | Animation strips the sprite builds |
 
 **UI**
 
