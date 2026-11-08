@@ -72,6 +72,10 @@ extends GameConfig
 ## Time between footstep sounds while running (s).
 @export var step_interval: float = 0.3
 
+@export_group("Economy")
+## Radius within which the player pulls in currency pickups (px).
+@export var magnet_radius: float = 28.0
+
 @export_group("Animation")
 ## One def per player animation, looked up by id.
 @export var animations: Array[AnimationDef] = []
@@ -121,6 +125,8 @@ func validate() -> PackedStringArray:
 		warnings.append("iframe_blink_rate must be positive")
 	if attack_speed <= 0.0 or attack_reach <= 0.0:
 		warnings.append("attack_speed and attack_reach must be positive")
+	if magnet_radius < 0.0:
+		warnings.append("magnet_radius must not be negative")
 	if moveset == null:
 		warnings.append("moveset is not set")
 	else:

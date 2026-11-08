@@ -115,6 +115,7 @@ loop = false
 [resource]
 script = ExtResource("1_cfg")
 step_interval = 0.3
+magnet_radius = 28.0
 max_health = 3
 hurt_iframes = 1.0
 hurt_stun = 0.3

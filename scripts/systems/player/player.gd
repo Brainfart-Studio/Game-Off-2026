@@ -14,6 +14,8 @@ const BLINK_LOW: float = 0.35
 @onready var attack_hitbox: Hitbox = $AttackHitbox
 @onready var health: Health = $Health
 @onready var hurtbox: Hurtbox = $Hurtbox
+@onready var magnet: Area2D = $Magnet
+@onready var _magnet_shape: CollisionShape2D = $Magnet/Shape
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -50,6 +52,7 @@ func _ready() -> void:
 	health.changed.connect(_on_health_changed)
 	health.died.connect(_on_died)
 	add_to_group(Groups.PLAYER)
+	_setup_magnet()
 
 
 ## Flashes the sprite. Feedback calls this on the event's target.
@@ -63,6 +66,25 @@ func spawn(at: Vector2) -> void:
 	velocity = Vector2.ZERO
 	Events.player_spawned.emit(self)
 	Events.player_health_changed.emit(health.current, health.max_value)
+
+
+func _setup_magnet() -> void:
+	magnet.collision_layer = Layers.PLAYER
+	magnet.collision_mask = 0
+	magnet.monitoring = false
+	magnet.add_to_group(Groups.MAGNET)
+	_update_magnet_radius()
+	Events.stats_changed.connect(_on_stats_changed)
+
+
+func _update_magnet_radius() -> void:
+	var circle: CircleShape2D = _magnet_shape.shape as CircleShape2D
+	circle.radius = stats.value(&"magnet_radius")
+
+
+func _on_stats_changed(changed_owner: Node) -> void:
+	if changed_owner == self:
+		_update_magnet_radius()
 
 
 func _process(_delta: float) -> void:
