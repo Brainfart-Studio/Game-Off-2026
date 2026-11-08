@@ -50,6 +50,20 @@ Gameplay code never calls `Feedback`. It emits on `Events`, and `Feedback` plays
 
 Toggles: `enabled` blocks everything, `shake_enabled` blocks shake, `flash_enabled` blocks screen flashes. Tests that run combat physics turn `enabled` off and restore it. Hitstop changes `Engine.time_scale` and restores it on real time. `Feedback.reset()` puts time, shake, and flash back to normal.
 
+## Combat
+
+Combat pieces live in `scripts/systems/combat/` and know nothing about the player or enemies. An owner builds them from a `Team.Id` (`PLAYER` or `ENEMY`), a `Health`, a `Hurtbox`, and a `Hitbox`.
+
+**Teams and layers.** A hitbox sits on its team's hitbox layer and looks for the other team's hurtbox layer. A hurtbox sits on its team's hurtbox layer and looks for nothing, so a hit can never land on its own team. Layer bits come from `Layers`, never numbers.
+
+**Hitbox rules.** `activate(data, facing, damage, reach)` starts an attack: each hurtbox is hit once per activation, and a new activation hits again. `set_contact(...)` starts a contact box that tries every overlapping hurtbox each physics frame; the target's invulnerability stops repeats. Knockback x follows the attacker's facing, or the side the target is on for contact. A hit builds a `DamageInfo` and gives it to the hurtbox; `landed` fires only when the health took it.
+
+**Health.** `Health` holds `current` and `max_value`, read from `Stats` by stat name. `damage(info)` refuses when dead, invulnerable, or the amount is 0. `iframes_stat` names the stat for invulnerability after a hit; empty means none. `died` fires once. A change to the owner's stats recomputes the max and raises `current` by any gain.
+
+**Hurt side emits events.** `Hurtbox` and `Health` signals stay local. The owner of the hurt side listens to them and emits the `Events` signal, passing the `DamageInfo` first. `Feedback` and `Audio` then play `info.feedback` and `info.sound` when they are set, and the event's own binding otherwise. The event still needs a binding row so the services listen to it.
+
+**Attacks.** An `AttackData` config holds one attack's hitbox, timing, damage, knockback, and effects. A `Moveset` picks the attack by stance and input direction, falling back from air to ground to `ground_neutral`.
+
 ## Configs
 
 Every tunable lives in a `GameConfig` resource under `config/`, edited in the inspector. Scripts read the values and hold no magic numbers. A config can override `validate()` to return warnings. See [tuning.md](tuning.md).

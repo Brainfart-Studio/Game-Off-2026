@@ -107,6 +107,23 @@ Shake strength follows trauma squared, so small hits stay subtle and big ones ki
 
 Entries now: `shift` (small shake and rumble, on `world_shift_started`) and `shift_denied` (light rumble, on `shift_denied`).
 
+**Attacks**
+
+An `AttackData` config describes one attack. A `Moveset` config holds up to eight of them: ground and air, each neutral, side, up, and down. A missing air slot uses the ground slot of the same direction, then `ground_neutral`. `ground_neutral` must be set.
+
+| Value | Effect |
+|---|---|
+| `id`, `animation` | Name of the attack and the animation played |
+| `hitbox_size`, `hitbox_offset` | Hitbox size and center from the feet, facing right (px) |
+| `startup`, `active`, `recovery` | Seconds before the hit, during it, and after it. Divided by the attacker's attack speed |
+| `damage` | Health removed |
+| `knockback_angle` | Degrees. 0 forward, -90 up, 90 down |
+| `knockback_force` | Knockback speed (px/s) |
+| `move_control` | Share of normal acceleration kept during the attack, 0 to 1 |
+| `pogo_velocity` | Upward speed the attacker gets on a hit (px/s) |
+| `hit_feedback`, `hit_sound` | Feedback entry id and sound id played on a hit |
+| `tags` | Labels passed to the damage info |
+
 ## Editing in the inspector
 
 1. Open the `.tres` file in the Godot editor (double-click it in the FileSystem dock).
