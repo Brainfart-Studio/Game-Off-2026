@@ -8,12 +8,27 @@ extends Node2D
 @export var floor_top: int = 15
 
 @onready var collision: TileMapLayer = $Collision
+@onready var _bounds: ArenaBounds = $ArenaBounds
+@onready var _peaceful_skin: TileSkin = $PeacefulWorld/Skin
+@onready var _combat_skin: TileSkin = $CombatWorld/Skin
+@onready var _peaceful_content: Node2D = $PeacefulWorld/Content
+@onready var _combat_content: Node2D = $CombatWorld/Content
 
 
-func _ready() -> void:
+## Builds the arena. Run calls this once, after every child is ready.
+func setup() -> void:
 	if collision.get_used_cells().is_empty():
 		_fill_superflat()
 	collision.visible = false
+	_peaceful_skin.build()
+	_combat_skin.build()
+	_bounds.setup()
+	Game.register_content(World.Id.PEACEFUL, _peaceful_content)
+	Game.register_content(World.Id.COMBAT, _combat_content)
+
+
+func player_spawn_position() -> Vector2:
+	return $PlayerSpawn.global_position
 
 
 func _fill_superflat() -> void:

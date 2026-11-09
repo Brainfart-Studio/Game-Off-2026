@@ -18,7 +18,7 @@ func before_test() -> void:
 	_skin.id = "test_skin"
 	_root.add_child(_skin)
 	add_child(_root)
-	await get_tree().process_frame
+	_skin.build()
 
 
 func test_edge_selection() -> void:

@@ -7,6 +7,9 @@ const PEAK_OVERSHOOT: float = 6.0
 
 var _runner: GdUnitSceneRunner
 var _player: Player
+var _jumps: int = 0
+var _lands: int = 0
+var _step_frames: Array[int] = []
 
 
 func before_test() -> void:
@@ -25,11 +28,32 @@ func before_test() -> void:
 	_player.position = Vector2(-100.0, -2.0)
 	root.add_child(_player)
 	_runner = scene_runner(root)
+	_jumps = 0
+	_lands = 0
+	_step_frames.clear()
+	Events.player_jumped.connect(_on_jumped)
+	Events.player_landed.connect(_on_landed)
+	Events.player_stepped.connect(_on_stepped)
 
 
 func after_test() -> void:
+	Events.player_jumped.disconnect(_on_jumped)
+	Events.player_landed.disconnect(_on_landed)
+	Events.player_stepped.disconnect(_on_stepped)
 	for action: StringName in InputMap.get_actions():
 		Input.action_release(action)
+
+
+func _on_jumped() -> void:
+	_jumps += 1
+
+
+func _on_landed() -> void:
+	_lands += 1
+
+
+func _on_stepped() -> void:
+	_step_frames.append(Engine.get_physics_frames())
 
 
 func _frames(count: int) -> void:
@@ -122,3 +146,46 @@ func test_too_early_press_is_not_buffered() -> void:
 		top_y = minf(top_y, _player.global_position.y)
 	assert_float(_player.global_position.y).is_equal_approx(FLOOR_Y, 1.0)
 	assert_str(String(_state())).is_equal("Idle")
+
+
+func test_jump_emits_one_player_jumped() -> void:
+	await _settle()
+	_jumps = 0
+	Input.action_press(Actions.JUMP)
+	await _frames(30)
+	Input.action_release(Actions.JUMP)
+	assert_int(_jumps).is_equal(1)
+
+
+func test_landing_emits_player_landed() -> void:
+	await _settle()
+	_lands = 0
+	Input.action_press(Actions.JUMP)
+	await _frames(2)
+	Input.action_release(Actions.JUMP)
+	assert_int(_lands).is_equal(0)
+	await _frames(70)
+	assert_int(_lands).is_equal(1)
+
+
+func test_steps_are_spaced_by_step_interval_while_running() -> void:
+	await _settle()
+	_step_frames.clear()
+	Input.action_press(Actions.MOVE_LEFT)
+	await _frames(90)
+	Input.action_release(Actions.MOVE_LEFT)
+	assert_int(_step_frames.size()).is_greater_equal(4)
+	var expected: float = _player.config.step_interval * float(Engine.physics_ticks_per_second)
+	for i: int in range(1, _step_frames.size()):
+		assert_float(float(_step_frames[i] - _step_frames[i - 1])).is_between(expected - 1.0, expected + 1.0)
+
+
+func test_first_step_is_immediate_and_none_while_standing() -> void:
+	await _settle()
+	_step_frames.clear()
+	await _frames(30)
+	assert_int(_step_frames.size()).is_equal(0)
+	Input.action_press(Actions.MOVE_LEFT)
+	await _frames(3)
+	Input.action_release(Actions.MOVE_LEFT)
+	assert_int(_step_frames.size()).is_equal(1)

@@ -9,7 +9,9 @@ func enter(previous: StringName) -> void:
 func physics_update(delta: float) -> void:
 	player.move(delta)
 	player.apply_gravity(delta)
-	if player.can_jump():
+	if player.can_attack():
+		machine.transition_to(&"Attack")
+	elif player.can_jump():
 		machine.transition_to(&"Jump")
 	elif player.is_on_floor():
 		if player.input.move_x != 0.0:

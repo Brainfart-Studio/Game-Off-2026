@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/scoring/score.gd" id="1_score"]
+[ext_resource type="Resource" path="res://config/scoring/score_config.tres" id="2_cfg"]
+
+[node name="Score" type="Node"]
+script = ExtResource("1_score")
+config = ExtResource("2_cfg")

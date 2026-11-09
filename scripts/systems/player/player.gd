@@ -3,12 +3,19 @@ extends CharacterBody2D
 ## Player body. Owns the physics verbs; states own the transitions.
 ## Frame order: input read, state physics_update (move, gravity, jump), move_and_slide.
 
+## Sprite opacity at the dim end of the invulnerability blink.
+const BLINK_LOW: float = 0.35
+
 @onready var stats: Stats = $Stats
 @onready var input: PlayerInput = $PlayerInput
 @onready var machine: StateMachine = $StateMachine
 @onready var visual: Node2D = $Visual
-@onready var sprite: AnimatedSprite2D = $Visual/Sprite
-@onready var asset_label: AssetLabel = $Visual/AssetLabel
+@onready var sprite: ActorSprite = $Visual/Sprite
+@onready var attack_hitbox: Hitbox = $AttackHitbox
+@onready var health: Health = $Health
+@onready var hurtbox: Hurtbox = $Hurtbox
+@onready var magnet: Area2D = $Magnet
+@onready var _magnet_shape: CollisionShape2D = $Magnet/Shape
 
 ## 1 faces right, -1 faces left. Only `visual` is flipped, never the body.
 var facing: int = 1
@@ -16,12 +23,22 @@ var facing: int = 1
 var coyote_left: float = 0.0
 ## Seconds left in which a remembered jump press is still valid.
 var buffer_left: float = 0.0
+## Seconds left in which a remembered attack press is still valid.
+var attack_buffer_left: float = 0.0
+## The attack being played. Set by the Attack state, read by the animator.
+var current_attack: AttackData
+## True while an attack holds the facing.
+var facing_locked: bool = false
+## The last hit the player took. Read by the Hurt state for the knockback.
+var last_hit: DamageInfo
 
 ## The player's config, read directly for non-numeric and structural values.
 var config: PlayerConfig
 
 var _jump_consumed: bool = false
 var _jump_cut_done: bool = false
+var _was_on_floor: bool = false
+var _step_left: float = 0.0
 
 
 func _ready() -> void:
@@ -30,11 +47,48 @@ func _ready() -> void:
 	# The player drives the machine so the order stays: input, state, move_and_slide.
 	machine.set_physics_process(false)
 	_build_sprite()
+	health.setup()
+	hurtbox.hurt.connect(_on_hurt)
+	health.changed.connect(_on_health_changed)
+	health.died.connect(_on_died)
 	add_to_group(Groups.PLAYER)
-	var spawn: Node2D = get_tree().get_first_node_in_group(Groups.PLAYER_SPAWN) as Node2D
-	if spawn != null:
-		global_position = spawn.global_position
-	Events.player_spawned.emit.call_deferred(self)
+	_setup_magnet()
+
+
+## Flashes the sprite. Feedback calls this on the event's target.
+func flash(color: Color, duration: float) -> void:
+	sprite.flash(color, duration)
+
+
+## Places the player and announces it. Run calls this once, after the arena is set up.
+func spawn(at: Vector2) -> void:
+	global_position = at
+	velocity = Vector2.ZERO
+	Events.player_spawned.emit(self)
+	Events.player_health_changed.emit(health.current, health.max_value)
+
+
+func _setup_magnet() -> void:
+	magnet.collision_layer = Layers.PLAYER
+	magnet.collision_mask = 0
+	magnet.monitoring = false
+	magnet.add_to_group(Groups.MAGNET)
+	_update_magnet_radius()
+	Events.stats_changed.connect(_on_stats_changed)
+
+
+func _update_magnet_radius() -> void:
+	var circle: CircleShape2D = _magnet_shape.shape as CircleShape2D
+	circle.radius = stats.value(&"magnet_radius")
+
+
+func _on_stats_changed(changed_owner: Node) -> void:
+	if changed_owner == self:
+		_update_magnet_radius()
+
+
+func _process(_delta: float) -> void:
+	visual.modulate.a = _blink_alpha()
 
 
 func _physics_process(delta: float) -> void:
@@ -43,10 +97,12 @@ func _physics_process(delta: float) -> void:
 	if machine.current != null:
 		machine.current.physics_update(delta)
 	move_and_slide()
+	_emit_ground_events(delta)
 
 
 ## Horizontal movement toward the input direction, with ground or air accel and decel.
-func move(delta: float) -> void:
+## `control` scales the accel and decel rate: 1 is normal, 0 gives no steering or braking.
+func move(delta: float, control: float = 1.0) -> void:
 	var speed: float = stats.value(&"run_speed")
 	if is_apex():
 		speed *= stats.value(&"apex_speed_multiplier")
@@ -56,9 +112,9 @@ func move(delta: float) -> void:
 		rate = stats.value(&"ground_accel") if input.move_x != 0.0 else stats.value(&"ground_decel")
 	else:
 		rate = stats.value(&"air_accel") if input.move_x != 0.0 else stats.value(&"air_decel")
-	velocity.x = move_toward(velocity.x, target, rate * delta)
+	velocity.x = move_toward(velocity.x, target, rate * control * delta)
 	if input.move_x != 0.0:
-		_set_facing(1 if input.move_x > 0.0 else -1)
+		set_facing(1 if input.move_x > 0.0 else -1)
 
 
 ## Jump gravity, scaled when falling and in the apex band, clamped to max fall speed.
@@ -80,6 +136,24 @@ func can_jump() -> bool:
 	return wants_jump and allowed and not _jump_consumed
 
 
+## True when a remembered attack press is waiting.
+func can_attack() -> bool:
+	return attack_buffer_left > 0.0
+
+
+## Uses up the remembered attack press.
+func consume_attack() -> void:
+	attack_buffer_left = 0.0
+
+
+## Faces `direction` (1 right, -1 left). Ignored while an attack holds the facing.
+func set_facing(direction: int) -> void:
+	if facing_locked:
+		return
+	facing = direction
+	visual.scale.x = float(direction)
+
+
 ## Launches the jump and consumes the buffer and coyote time.
 func jump() -> void:
 	velocity.y = -PlayerConfig.velocity_for(stats.value(&"jump_height"), stats.value(&"time_to_apex"))
@@ -87,6 +161,7 @@ func jump() -> void:
 	_jump_cut_done = false
 	buffer_left = 0.0
 	coyote_left = 0.0
+	Events.player_jumped.emit()
 
 
 ## Shortens the jump once, when jump is released while rising.
@@ -113,16 +188,53 @@ func _update_timers(delta: float) -> void:
 		buffer_left = stats.value(&"jump_buffer_time")
 	else:
 		buffer_left = maxf(buffer_left - delta, 0.0)
+	if input.attack_pressed:
+		attack_buffer_left = stats.value(&"attack_buffer_time")
+	else:
+		attack_buffer_left = maxf(attack_buffer_left - delta, 0.0)
+
+
+## Emits `player_landed` on touching the floor and `player_stepped` every `step_interval` while
+## running on it. The step countdown is 0 while stopped or airborne, so the first step is at once.
+func _emit_ground_events(delta: float) -> void:
+	var on_floor: bool = is_on_floor()
+	if on_floor and not _was_on_floor:
+		Events.player_landed.emit()
+	_was_on_floor = on_floor
+	if on_floor and absf(velocity.x) > 1.0:
+		_step_left -= delta
+		if _step_left <= 0.0:
+			Events.player_stepped.emit()
+			_step_left = stats.value(&"step_interval")
+	else:
+		_step_left = 0.0
 
 
 func _build_sprite() -> void:
-	sprite.sprite_frames = AssetLoader.sprite_frames(config.animations)
-	var first: StringName = &"player_idle"
-	if sprite.sprite_frames.has_animation(first):
-		sprite.play(first)
-		asset_label.show_if_fallback(sprite.sprite_frames.get_frame_texture(first, 0), String(first))
+	sprite.build(config.animations)
+	sprite.play_id(&"player_idle")
 
 
-func _set_facing(direction: int) -> void:
-	facing = direction
-	visual.scale.x = float(direction)
+## Opacity of the sprite: blinks between full and `BLINK_LOW` while invulnerable, else full.
+func _blink_alpha() -> float:
+	if not health.is_invulnerable() or health.is_dead():
+		return 1.0
+	var half_cycles: int = floori(health.invulnerable_left * stats.value(&"iframe_blink_rate") * 2.0)
+	return 1.0 if half_cycles % 2 == 0 else BLINK_LOW
+
+
+func _on_hurt(info: DamageInfo) -> void:
+	last_hit = info
+	Events.player_damaged.emit(info)
+	if not health.is_dead():
+		machine.transition_to(&"Hurt")
+
+
+func _on_health_changed(current: int, max_value: int) -> void:
+	Events.player_health_changed.emit(current, max_value)
+
+
+## Health emits `died` before the hurtbox emits `hurt`, so Dead is entered before `_on_hurt` runs.
+func _on_died(_info: DamageInfo) -> void:
+	machine.transition_to(&"Dead")
+	Events.player_died.emit()

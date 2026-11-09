@@ -11,5 +11,7 @@ func physics_update(delta: float) -> void:
 	player.move(delta)
 	player.apply_gravity(delta)
 	player.cut_jump()
-	if player.velocity.y >= 0.0:
+	if player.can_attack():
+		machine.transition_to(&"Attack")
+	elif player.velocity.y >= 0.0:
 		machine.transition_to(&"Fall")

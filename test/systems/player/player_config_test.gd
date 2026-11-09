@@ -9,8 +9,24 @@ func _def(id: String, path: String, frames: int) -> AnimationDef:
 	return def
 
 
-func test_defaults_have_no_warnings() -> void:
-	assert_array(PlayerConfig.new().validate()).is_empty()
+func test_shipped_config_has_no_warnings() -> void:
+	var config: PlayerConfig = load("res://config/player/player_config.tres") as PlayerConfig
+	assert_array(config.validate()).is_empty()
+
+
+func test_null_moveset_warns() -> void:
+	assert_array(PlayerConfig.new().validate()).contains(["moveset is not set"])
+
+
+func test_bad_combat_values_warn() -> void:
+	var config: PlayerConfig = load("res://config/player/player_config.tres").duplicate() as PlayerConfig
+	config.max_health = 0
+	config.attack_speed = 0.0
+	config.iframe_blink_rate = 0.0
+	var warnings: PackedStringArray = config.validate()
+	assert_array(warnings).contains(["max_health must be at least 1"])
+	assert_array(warnings).contains(["attack_speed and attack_reach must be positive"])
+	assert_array(warnings).contains(["iframe_blink_rate must be positive"])
 
 
 func test_gravity_and_velocity_for_default_jump() -> void:

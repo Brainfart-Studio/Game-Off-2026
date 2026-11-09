@@ -1,3 +1,4 @@
+@tool
 class_name AssetLoader
 extends RefCounted
 ## Static asset helpers with labeled fallbacks. Not an autoload.
@@ -56,6 +57,13 @@ static func sound(path: String) -> AudioStream:
 	if options.is_empty():
 		return null
 	return load(options.pick_random()) as AudioStream
+
+
+## Loads the font at `path`, or null if missing.
+static func font(path: String) -> Font:
+	if ResourceLoader.exists(path):
+		return load(path) as Font
+	return null
 
 
 static func _fallback(size: Vector2i, id: String) -> Texture2D:

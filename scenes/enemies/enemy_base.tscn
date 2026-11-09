@@ -1,0 +1,83 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/enemies/enemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://scripts/systems/player/stats.gd" id="2_stats"]
+[ext_resource type="Script" path="res://scripts/systems/combat/health.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/systems/combat/hurtbox.gd" id="4_hurtbox"]
+[ext_resource type="Script" path="res://scripts/systems/combat/hitbox.gd" id="5_hitbox"]
+[ext_resource type="Script" path="res://scripts/core/state_machine.gd" id="6_machine"]
+[ext_resource type="Script" path="res://scripts/systems/enemies/states/enemy_hurt.gd" id="7_hurt"]
+[ext_resource type="Script" path="res://scripts/systems/enemies/states/enemy_die.gd" id="8_die"]
+[ext_resource type="Script" path="res://scripts/systems/enemies/enemy_animator.gd" id="9_anim"]
+[ext_resource type="Script" path="res://scripts/core/actor_sprite.gd" id="10_actor"]
+[ext_resource type="Script" path="res://scripts/core/asset_label.gd" id="11_label"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(14, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(14, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_contact"]
+size = Vector2(11, 16)
+
+[node name="Enemy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_enemy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Stats" type="Node" parent="."]
+script = ExtResource("2_stats")
+
+[node name="Health" type="Node" parent="." node_paths=PackedStringArray("stats")]
+script = ExtResource("3_health")
+stats = NodePath("../Stats")
+max_stat = &"max_health"
+
+[node name="Hurtbox" type="Area2D" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("4_hurtbox")
+team = 1
+health = NodePath("../Health")
+
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_hurt")
+
+[node name="ContactHitbox" type="Area2D" parent="."]
+script = ExtResource("5_hitbox")
+team = 1
+
+[node name="Shape" type="CollisionShape2D" parent="ContactHitbox"]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_contact")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("6_machine")
+
+[node name="Hurt" type="Node" parent="StateMachine"]
+script = ExtResource("7_hurt")
+
+[node name="Die" type="Node" parent="StateMachine"]
+script = ExtResource("8_die")
+
+[node name="EnemyAnimator" type="Node" parent="."]
+script = ExtResource("9_anim")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+script = ExtResource("10_actor")
+
+[node name="AssetLabel" type="Label" parent="Visual"]
+offset_left = -16.0
+offset_top = -32.0
+script = ExtResource("11_label")
+
+[node name="LedgeCheck" type="RayCast2D" parent="Visual"]
+position = Vector2(9, -2)
+target_position = Vector2(0, 12)
+collision_mask = 1
