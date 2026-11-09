@@ -14,3 +14,7 @@ script = ExtResource("2_patrol")
 
 [node name="Chase" type="Node" parent="StateMachine" index="3"]
 script = ExtResource("3_chase")
+
+[node name="Sprite" parent="Visual" index="0"]
+preview_config = "res://config/enemies/walker.tres"
+preview_animation = &"walker_idle"

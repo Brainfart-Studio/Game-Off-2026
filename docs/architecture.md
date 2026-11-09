@@ -89,6 +89,8 @@ Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scen
 
 `ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
 
+In the editor, `ActorSprite` draws the first frame of `preview_animation` from the config at `preview_config` (or its labeled box), so each character shows in its scene. The preview is only drawn, never saved into the scene.
+
 ## Player combat
 
 The player attacks, takes hits, and dies through states: `Attack`, `Hurt`, and `Dead`. `Attack` reads the `Moveset` and the held direction when it starts, locks the facing, and turns `AttackHitbox` on after startup and off after the active time. `Health` and `Stats` are siblings under the player. A hit reaches the player through `Hurtbox`; the player emits `player_damaged`, `player_health_changed`, and `player_died`, and `Audio` and `Feedback` play from bindings. Run end on death is the run loop's job, not the player's.
@@ -135,12 +137,14 @@ The peaceful and combat worlds share one collision layer. Only the skins and bac
 
 Rule: everything that belongs to combat (enemies, projectiles, drops) is spawned under `CombatWorld`, so the freeze applies to it.
 
+In the editor: the floor is saved in `Collision` (paint it there), each `TileSkin` draws itself over the collision cells, and each `WorldBackground` shows its texture in an unsaved preview child. `CombatWorld` is saved hidden so the editor shows the peaceful world; toggle its eye (and its `Background`) to see combat. `ArenaWorlds` sets the real visibility when the game runs.
+
 ## Run setup order
 
 `Run` (`scripts/systems/run/run.gd`) is the root of `main.tscn` and the composition root of the run scene. Its `_ready` runs after every child is ready. It is the only script that calls setup methods on the modules it composes. Modules do their own work in `_ready` but never depend on a sibling being set up.
 
 1. `Game.reset()`
-2. `Arena.setup()`: fills the default floor, hides `Collision`, builds both skins, builds the walls and emits `arena_bounds_changed`, registers both `Content` nodes with `Game`
+2. `Arena.setup()`: fills the default floor if `Collision` is empty, hides `Collision`, builds both skins, builds the walls and emits `arena_bounds_changed`, registers both `Content` nodes with `Game`
 3. `Player.spawn(Arena.player_spawn_position())`: emits `player_spawned`
 4. `WorldShift.start()`: emits `world_shifted` with the start world
 5. Run state: sets `Game.run_duration` and `Game.time_left` from `RunConfig`, then enters `Starting`

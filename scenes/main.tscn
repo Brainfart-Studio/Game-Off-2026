@@ -24,6 +24,7 @@ config = ExtResource("7_cfg")
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(48, 232)
 
 [node name="GameCamera" parent="." instance=ExtResource("4_camera")]
 
