@@ -6,14 +6,11 @@ extends CanvasLayer
 
 var _player: Player
 var _shift: WorldShift
-var _world: int = World.Id.PEACEFUL
 
 
 func _ready() -> void:
 	visible = false
-	_shift = get_parent().get_node_or_null("WorldShift") as WorldShift
 	Events.player_spawned.connect(_on_player_spawned)
-	Events.world_shifted.connect(_on_world_shifted)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -22,6 +19,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
+	if _shift == null:
+		_shift = get_tree().get_first_node_in_group(Groups.WORLD_SHIFT) as WorldShift
 	if not visible:
 		return
 	var lines := PackedStringArray()
@@ -34,7 +33,9 @@ func _process(_delta: float) -> void:
 		lines.append("buffer: %.2f" % _player.buffer_left)
 	else:
 		lines.append("no player")
-	lines.append("world: %s" % World.Id.keys()[_world])
+	lines.append("world: %s" % World.Id.keys()[Game.world])
+	lines.append("run: %s" % Game.Phase.keys()[Game.phase])
+	lines.append("time: %.1f" % Game.time_left)
 	if _shift != null:
 		lines.append("shift cooldown: %.2f" % _shift.cooldown_left)
 	lines.append("fps: %d" % Engine.get_frames_per_second())
@@ -43,7 +44,3 @@ func _process(_delta: float) -> void:
 
 func _on_player_spawned(player: Node2D) -> void:
 	_player = player as Player
-
-
-func _on_world_shifted(to: int) -> void:
-	_world = to

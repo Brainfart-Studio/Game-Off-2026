@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="SoundConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/audio/sound_config.gd" id="1_cfg"]
+[ext_resource type="Script" path="res://scripts/systems/audio/sound_def.gd" id="2_def"]
+
+[sub_resource type="Resource" id="Resource_step"]
+script = ExtResource("2_def")
+id = &"player_step"
+volume_db = -6.0
+pitch_min = 0.9
+pitch_max = 1.1
+max_voices = 2
+cooldown = 0.1
+
+[sub_resource type="Resource" id="Resource_swing"]
+script = ExtResource("2_def")
+id = &"attack_swing"
+pitch_min = 0.9
+pitch_max = 1.1
+max_voices = 3
+
+[sub_resource type="Resource" id="Resource_hit_enemy"]
+script = ExtResource("2_def")
+id = &"hit_enemy"
+pitch_min = 0.9
+pitch_max = 1.15
+max_voices = 4
+
+[sub_resource type="Resource" id="Resource_currency"]
+script = ExtResource("2_def")
+id = &"currency_pickup"
+pitch_min = 0.95
+pitch_max = 1.2
+max_voices = 3
+cooldown = 0.04
+
+[resource]
+script = ExtResource("1_cfg")
+sounds = Array[ExtResource("2_def")]([SubResource("Resource_step"), SubResource("Resource_swing"), SubResource("Resource_hit_enemy"), SubResource("Resource_currency")])
+bindings = Dictionary[StringName, StringName]({
+&"combo_broken": &"combo_break",
+&"combo_raised": &"combo_up",
+&"currency_collected": &"currency_pickup",
+&"enemy_killed": &"enemy_death",
+&"enemy_spawn_warned": &"enemy_spawn_warning",
+&"enemy_spawned": &"enemy_spawn",
+&"hit_landed": &"hit_enemy",
+&"player_attacked": &"attack_swing",
+&"player_damaged": &"player_hurt",
+&"player_died": &"player_death",
+&"player_jumped": &"player_jump",
+&"player_landed": &"player_land",
+&"player_stepped": &"player_step",
+&"run_ended": &"run_end",
+&"shift_denied": &"shift_denied",
+&"time_warning": &"timer_warning",
+&"world_shift_started.combat": &"shift_to_combat",
+&"world_shift_started.peaceful": &"shift_to_peaceful"
+})

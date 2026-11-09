@@ -18,9 +18,14 @@ extends Node2D
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+
+
+## Builds the walls once and announces the rect. Arena calls this in `setup()`.
+func setup() -> void:
+	if has_node("Walls"):
+		return
 	_build_walls()
-	# Deferred so listeners added in the same frame (camera) receive it.
-	Events.arena_bounds_changed.emit.call_deferred(global_rect())
+	Events.arena_bounds_changed.emit(global_rect())
 
 
 func global_rect() -> Rect2:
@@ -35,7 +40,7 @@ func _draw() -> void:
 func _build_walls() -> void:
 	var body: StaticBody2D = StaticBody2D.new()
 	body.name = "Walls"
-	body.collision_layer = 1
+	body.collision_layer = Layers.WORLD
 	body.collision_mask = 0
 	add_child(body)
 	var t: float = wall_thickness

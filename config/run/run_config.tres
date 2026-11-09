@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RunConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/run/run_config.gd" id="1_cfg"]
+
+[resource]
+script = ExtResource("1_cfg")
+duration = 120.0
+start_delay = 1.0
+death_delay = 1.2
+warning_time = 10

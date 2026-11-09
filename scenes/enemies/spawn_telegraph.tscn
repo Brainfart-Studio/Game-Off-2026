@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/systems/enemies/spawn_telegraph.gd" id="1_telegraph"]
+[ext_resource type="Script" path="res://scripts/core/actor_sprite.gd" id="2_actor"]
+[ext_resource type="Script" path="res://scripts/core/asset_label.gd" id="3_label"]
+
+[node name="SpawnTelegraph" type="Node2D"]
+script = ExtResource("1_telegraph")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Visual"]
+script = ExtResource("2_actor")
+preview_config = "res://config/enemies/spawn_config.tres"
+preview_animation = &"fx_spawn_telegraph"
+
+[node name="AssetLabel" type="Label" parent="Visual"]
+offset_left = -16.0
+offset_top = -32.0
+script = ExtResource("3_label")

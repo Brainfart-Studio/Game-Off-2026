@@ -10,3 +10,10 @@ const ATTACK := &"attack"
 const SHIFT := &"shift"
 const PAUSE := &"pause"
 const DEBUG_OVERLAY := &"debug_overlay"
+
+## Built-in menu actions.
+const UI_UP := &"ui_up"
+const UI_DOWN := &"ui_down"
+const UI_LEFT := &"ui_left"
+const UI_RIGHT := &"ui_right"
+const UI_ACCEPT := &"ui_accept"

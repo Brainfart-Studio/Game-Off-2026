@@ -18,6 +18,10 @@ config/icon="res://icon.svg"
 [autoload]
 
 Events="*res://scripts/core/events.gd"
+Game="*res://scripts/core/game.gd"
+Audio="*res://scenes/audio/audio.tscn"
+Feedback="*res://scenes/feedback/feedback.tscn"
+Save="*res://scripts/core/save.gd"
 
 [display]
 
@@ -27,6 +31,10 @@ window/size/window_width_override=1440
 window/size/window_height_override=810
 window/stretch/mode="viewport"
 window/stretch/scale_mode="integer"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 
 [input]
 

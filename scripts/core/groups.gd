@@ -1,0 +1,10 @@
+class_name Groups
+## Node group names (R-058). Scripts use these, never string literals.
+
+const PLAYER := &"player"
+const WORLD_SHIFT := &"world_shift"
+const ENEMY := &"enemy"
+const ENEMY_SPAWN := &"enemy_spawn"
+const SPAWN_TELEGRAPH := &"spawn_telegraph"
+const PICKUP := &"pickup"
+const MAGNET := &"magnet"

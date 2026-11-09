@@ -5,8 +5,6 @@ extends Camera2D
 
 @export var config: CameraConfig
 
-const VIEW_SIZE: Vector2 = Vector2(480, 270)
-
 var _target: Player
 var _look_ahead: float = 0.0
 
@@ -43,8 +41,9 @@ func _on_player_spawned(player: Node2D) -> void:
 
 
 func _on_arena_bounds_changed(bounds: Rect2) -> void:
-	var x: Vector2 = _axis_limits(bounds.position.x, bounds.end.x, VIEW_SIZE.x)
-	var y: Vector2 = _axis_limits(bounds.position.y, bounds.end.y, VIEW_SIZE.y)
+	var view: Vector2 = Vector2(Display.view_size())
+	var x: Vector2 = _axis_limits(bounds.position.x, bounds.end.x, view.x)
+	var y: Vector2 = _axis_limits(bounds.position.y, bounds.end.y, view.y)
 	limit_left = roundi(x.x)
 	limit_right = roundi(x.y)
 	limit_top = roundi(y.x)

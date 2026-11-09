@@ -15,9 +15,8 @@ var _busy: bool = false
 
 
 func _ready() -> void:
+	add_to_group(Groups.WORLD_SHIFT)
 	config.check()
-	current = config.start_world
-	_announce_start.call_deferred()
 
 
 func _process(delta: float) -> void:
@@ -45,5 +44,10 @@ func shift() -> void:
 	_busy = false
 
 
-func _announce_start() -> void:
+## Begins the run in the configured start world. Run calls this after the arena and player
+## are set up, so every listener sees the first `world_shifted`.
+func start() -> void:
+	current = config.start_world
+	cooldown_left = 0.0
+	_busy = false
 	Events.world_shifted.emit(current)

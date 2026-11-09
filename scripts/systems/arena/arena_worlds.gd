@@ -11,11 +11,11 @@ func _ready() -> void:
 	_apply(World.Id.PEACEFUL)
 
 
-func _on_world_shifted(to: int) -> void:
+func _on_world_shifted(to: World.Id) -> void:
 	_apply(to)
 
 
-func _apply(to: int) -> void:
+func _apply(to: World.Id) -> void:
 	_set_world(_peaceful, to == World.Id.PEACEFUL)
 	_set_world(_combat, to == World.Id.COMBAT)
 
