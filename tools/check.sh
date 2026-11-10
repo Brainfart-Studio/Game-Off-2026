@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Headless check: imports the project, runs the main scene for 300 frames,
+# Headless check: imports the project, runs the main scene and the run scene for 300 frames each,
 # and fails on any script or load error. Use GODOT=/path/to/godot to override.
 set -euo pipefail
 
@@ -28,7 +28,11 @@ status=0
 scan import "$LOG_DIR/import.log" "$status"
 
 status=0
-"$GODOT_BIN" --headless --quit-after 300 >"$LOG_DIR/run.log" 2>&1 || status=$?
-scan run "$LOG_DIR/run.log" "$status"
+"$GODOT_BIN" --headless --quit-after 300 >"$LOG_DIR/main.log" 2>&1 || status=$?
+scan main "$LOG_DIR/main.log" "$status"
+
+status=0
+"$GODOT_BIN" --headless --quit-after 300 res://scenes/run.tscn >"$LOG_DIR/run_scene.log" 2>&1 || status=$?
+scan run_scene "$LOG_DIR/run_scene.log" "$status"
 
 echo "check: ok"
