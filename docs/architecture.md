@@ -9,8 +9,8 @@ res://
   scripts/
     core/        shared code: Events, Stats helpers, AssetLoader, Layers, Display, Groups, World
     systems/     one folder per module: player, enemies, shift, camera, arena, input, debug, run, audio
-    ui/          screens and widgets: results, initials entry, high score list, theme
-  scenes/        main.tscn and one scene folder per module
+    ui/          screens and widgets: title, menu stack and pages, results, initials entry, high score list, theme
+  scenes/        title.tscn, run.tscn, and one scene folder per module
   config/        .tres config resources (all tuning)
   art/           Loten
   audio/         sfx: Keltfire, music: Brainfart
@@ -138,9 +138,23 @@ Bindings are saved in the `input` section of `user://settings.cfg` as `<action>.
 
 UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script. A screen centers a `PanelContainer` in a `CenterContainer`; the theme draws the panel (9-slice, `panel_margin` border and inner space) and gives buttons compact margins. The game view is 320x180.
 
-`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows a centered panel in two columns: the run's numbers and `InitialsEntry` on the left, `HighScoreList` on the right, `Restart` below. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
+`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows a centered panel in two columns: the run's numbers and `InitialsEntry` on the left, `HighScoreList` on the right, `Restart` and `Title` below. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
 
 `HUD` (a `CanvasLayer`, layer 10) shows the run in progress: health pips, timer, world name, score, combo bar with the multiplier, and currency. It reads events only and never polls: `player_health_changed`, `time_changed`, `time_warning`, `run_started`, `world_shifted`, `score_changed`, `combo_changed`, and `wallet_changed`. Each widget is set by its event, and the modules announce their starting values on `run_started`, so the HUD needs no direct reference to any of them. The pips are rebuilt whenever the max health changes.
+
+## Scene flow
+
+`title.tscn` is the main scene (`run/main_scene`). Play changes to `run.tscn`. When the run ends, `Results` offers Restart (reload the run scene) and Title. `Title` on `Results` emits `title_requested`, and `Run.go_to_title` resets `Game`, unpauses the tree, and changes to the title.
+
+`Scenes` (`scripts/core/scenes.gd`) holds the two scene paths (`TITLE`, `RUN`) and `Scenes.change(tree, path)`, the one way to change scene: it records `last_request`, unpauses, and changes scene. Tests set `Scenes.changes_enabled = false` so the request is recorded and nothing changes.
+
+`Title` emits `title_opened` on `_ready`, and `Audio` plays the title music (`music_title.ogg`) on it.
+
+## Menus
+
+`MenuStack` (`scripts/ui/menu_stack.gd`) holds `MenuPage` children, one visible at a time. `push_named` and `push` open a page, `back` returns to the one below with its focused control restored, and `ui_cancel` calls `back`. At the root `back` does nothing unless `can_close_root` is on, which then closes the stack and emits `emptied` (the pause menu uses it). `MenuStack` plays `ui_move` when focus moves inside the current page, and `ui_back` on back. A `MenuPage` has a `first_focus` control, plays `ui_confirm` for every button press in it, and has `opened()` for refreshing its content. Pages ask the stack with `push_requested` and `back_requested`.
+
+`Title` (`scenes/title.tscn`, `scripts/ui/title.gd`) is a `MenuStack` with the pages `Main` (Play, High Scores, Credits), `HighScores` (the saved table), and `Credits`. The logo shows only on `Main`; while `ui_title_logo` is missing the game name shows as text.
 
 ## Missing assets
 
@@ -156,7 +170,7 @@ In the editor: the floor is saved in `Collision` (paint it there), each `TileSki
 
 ## Run setup order
 
-`Run` (`scripts/systems/run/run.gd`) is the root of `main.tscn` and the composition root of the run scene. Its `_ready` runs after every child is ready. It is the only script that calls setup methods on the modules it composes. Modules do their own work in `_ready` but never depend on a sibling being set up.
+`Run` (`scripts/systems/run/run.gd`) is the root of `run.tscn` and the composition root of the run scene. Its `_ready` runs after every child is ready. It is the only script that calls setup methods on the modules it composes. Modules do their own work in `_ready` but never depend on a sibling being set up.
 
 1. `Game.reset()`
 2. `Arena.setup()`: fills the default floor if `Collision` is empty, hides `Collision`, builds both skins, builds the walls and emits `arena_bounds_changed`, registers both `Content` nodes with `Game`
@@ -176,7 +190,7 @@ Listeners are connected in `_ready`, so they all exist before the first signal f
 
 Restart: `run_restart_requested` makes `Run` unpause the tree and reload the scene, so every module starts fresh. `Feedback` resets itself on `run_started` and `run_ended`.
 
-## Main scene
+## Run scene
 
 ```
 Run                  composition root, script run.gd
