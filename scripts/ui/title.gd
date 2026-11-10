@@ -5,6 +5,7 @@ extends Control
 const GAME_TITLE := "GAME OFF 2026"
 const PLAY := "PLAY"
 const HIGH_SCORES := "HIGH SCORES"
+const OPTIONS := "OPTIONS"
 const CREDITS := "CREDITS"
 const BACK := "BACK"
 const LOGO_PATH := "res://art/ui/ui_title_logo.png"
@@ -29,6 +30,7 @@ var _logo_is_text: bool = false
 @onready var _menu: MenuStack = %Menu
 @onready var _play: Button = %Play
 @onready var _high_scores_button: Button = %HighScoresButton
+@onready var _options_button: Button = %OptionsButton
 @onready var _credits_button: Button = %CreditsButton
 @onready var _high_score_list: HighScoreList = %HighScoreList
 @onready var _credits_text: Label = %CreditsText
@@ -50,6 +52,7 @@ func _ready() -> void:
 		_logo.texture = logo
 	_play.text = PLAY
 	_high_scores_button.text = HIGH_SCORES
+	_options_button.text = OPTIONS
 	_credits_button.text = CREDITS
 	_scores_heading.text = HIGH_SCORES
 	_credits_heading.text = CREDITS
@@ -59,6 +62,7 @@ func _ready() -> void:
 	_credits_text.text = "\n".join(CREDIT_LINES)
 	_play.pressed.connect(play)
 	_high_scores_button.pressed.connect(_on_high_scores_pressed)
+	_options_button.pressed.connect(_menu.push_named.bind(&"Options"))
 	_credits_button.pressed.connect(_menu.push_named.bind(&"Credits"))
 	_scores_back.pressed.connect(_menu.back)
 	_credits_back.pressed.connect(_menu.back)
