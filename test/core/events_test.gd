@@ -7,6 +7,7 @@ const SIGNALS: Array[String] = [
 	"arena_bounds_changed",
 	"player_spawned",
 	"stats_changed",
+	"settings_changed",
 ]
 
 
