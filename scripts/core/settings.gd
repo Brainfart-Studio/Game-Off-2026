@@ -9,6 +9,7 @@ const VOLUME_STEPS := 10
 const MUTED_DB := -80.0
 const SECTION_AUDIO := "audio"
 const SECTION_FEEDBACK := "feedback"
+const SECTION_INPUT := "input"
 const KEY_MASTER := "master"
 const KEY_MUSIC := "music"
 const KEY_SFX := "sfx"
@@ -26,6 +27,8 @@ var music_volume: int = VOLUME_STEPS
 var sfx_volume: int = VOLUME_STEPS
 var shake_enabled: bool = true
 var flash_enabled: bool = true
+## Saved input bindings as `InputRebinder.snapshot()` output. Empty means the defaults.
+var input_bindings: Dictionary = {}
 
 var _file: ConfigFile = ConfigFile.new()
 
@@ -44,6 +47,12 @@ func load_file() -> void:
 	sfx_volume = _read_volume(KEY_SFX)
 	shake_enabled = bool(_file.get_value(SECTION_FEEDBACK, KEY_SHAKE, true))
 	flash_enabled = bool(_file.get_value(SECTION_FEEDBACK, KEY_FLASH, true))
+	input_bindings = {}
+	if _file.has_section(SECTION_INPUT):
+		for key: String in _file.get_section_keys(SECTION_INPUT):
+			var value: Variant = _file.get_value(SECTION_INPUT, key)
+			if value is Array:
+				input_bindings[key] = value
 
 
 ## Writes the settings to `path`.
@@ -53,12 +62,33 @@ func save() -> void:
 	_file.set_value(SECTION_AUDIO, KEY_SFX, sfx_volume)
 	_file.set_value(SECTION_FEEDBACK, KEY_SHAKE, shake_enabled)
 	_file.set_value(SECTION_FEEDBACK, KEY_FLASH, flash_enabled)
+	if _file.has_section(SECTION_INPUT):
+		_file.erase_section(SECTION_INPUT)
+	for key: Variant in input_bindings:
+		_file.set_value(SECTION_INPUT, str(key), input_bindings[key])
 	_file.save(path)
 
 
-## Pushes the stored values to the audio buses.
+## Pushes the stored values to the audio buses and the InputMap.
 func apply() -> void:
 	_apply_volumes()
+	if not input_bindings.is_empty():
+		InputRebinder.apply_snapshot(input_bindings)
+
+
+## Stores the current InputMap bindings of the rebindable actions, saves, and emits.
+func save_input_bindings() -> void:
+	input_bindings = InputRebinder.snapshot()
+	save()
+	Events.settings_changed.emit()
+
+
+## Restores the default input bindings, saves, and emits.
+func reset_input_bindings() -> void:
+	input_bindings = {}
+	InputRebinder.reset_to_defaults()
+	save()
+	Events.settings_changed.emit()
 
 
 ## The volume of `bus` in steps.
@@ -117,6 +147,8 @@ func reset_to_defaults() -> void:
 	sfx_volume = VOLUME_STEPS
 	shake_enabled = true
 	flash_enabled = true
+	input_bindings = {}
+	InputRebinder.reset_to_defaults()
 	apply()
 	save()
 	Events.settings_changed.emit()
