@@ -36,9 +36,9 @@ func _ready() -> void:
 	_back.text = BACK
 	for stepper: OptionStepper in [_master, _music, _sfx]:
 		stepper.max_value = Settings.VOLUME_STEPS
-	_master.value_changed.connect(Settings.set_volume.bind(Settings.BUS_MASTER))
-	_music.value_changed.connect(Settings.set_volume.bind(Settings.BUS_MUSIC))
-	_sfx.value_changed.connect(Settings.set_volume.bind(Settings.BUS_SFX))
+	_master.value_changed.connect(_set_volume.bind(Settings.BUS_MASTER))
+	_music.value_changed.connect(_set_volume.bind(Settings.BUS_MUSIC))
+	_sfx.value_changed.connect(_set_volume.bind(Settings.BUS_SFX))
 	_shake.toggled.connect(Settings.set_shake_enabled)
 	_flash.toggled.connect(Settings.set_flash_enabled)
 	_controls.pressed.connect(push_requested.emit.bind(CONTROLS_PAGE))
@@ -53,6 +53,10 @@ func opened() -> void:
 	_sfx.value = Settings.sfx_volume
 	_shake.set_on(Settings.shake_enabled)
 	_flash.set_on(Settings.flash_enabled)
+
+
+func _set_volume(steps: int, bus: StringName) -> void:
+	Settings.set_volume(bus, steps)
 
 
 func _on_reset_pressed() -> void:
