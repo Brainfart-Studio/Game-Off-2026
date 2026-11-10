@@ -113,6 +113,7 @@ These are classes with static functions, not autoloads.
 | `Groups` | Node group names, used for lookups |
 | `Actions` | Input action names. Scripts never use action strings or raw keys |
 | `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline, panel box, compact buttons), once per config |
+| `InputRebinder` | Rebinds one key and one gamepad button per action, with labels and glyph paths for the controls screen |
 | `EventRouter` | Connects config-driven event keys to one handler and finds the binding for an emitted event |
 
 ## Save
@@ -124,6 +125,14 @@ These are classes with static functions, not autoloads.
 `Settings` (autoload, `scripts/core/settings.gd`, between `Game` and `Audio`) keeps the player settings in `user://settings.cfg`: three volumes in steps of 0 to 10 (`Master`, `Music`, `SFX`) and the shake and flash toggles. The autoload order is `Events`, `Game`, `Settings`, `Audio`, `Feedback`, `Save`, so it is ready before `Feedback` reads it. A missing or unreadable file gives the defaults (10, 10, 10, on, on).
 
 Every change saves at once and emits `settings_changed`. `set_volume(bus, steps)` clamps the steps and sets the bus volume (`volume_db`: 0 is muted, 10 is 0 dB). The `UI` bus sends into `SFX`, so the `SFX` volume scales menu sounds too. `Feedback` copies the two toggles on `_ready` and on every `settings_changed`.
+
+## Input
+
+Only `jump`, `attack`, `shift`, and `pause` are rebindable (`InputRebinder.REBINDABLE`), one key and one gamepad button each. Movement, the menu actions, and the debug overlay are fixed. `InputRebinder.rebind` replaces the action's events of that device. If another rebindable action already uses the new input on that device, it loses it and, when that leaves it with none, takes the old input of the rebound action. Joypad motion events are never touched.
+
+Bindings are saved in the `input` section of `user://settings.cfg` as `<action>.<keyboard|gamepad>` keys holding arrays of key or button codes (`InputRebinder.snapshot`). `Settings.apply` restores them over the `project.godot` defaults, and an empty `input_bindings` means the defaults. `Settings.save_input_bindings` and `reset_input_bindings` save and emit `settings_changed`.
+
+`ui_accept` (Enter, Kp Enter, Space, gamepad A) and `ui_cancel` (Escape, gamepad B) are defined in `project.godot`, so every menu works with the gamepad alone.
 
 ## UI
 

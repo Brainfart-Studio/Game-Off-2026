@@ -15,6 +15,7 @@ func before_test() -> void:
 func after_test() -> void:
 	Events.settings_changed.disconnect(_count_change)
 	_remove_file()
+	InputMap.load_from_project_settings()
 	Settings.apply()
 
 
@@ -123,3 +124,55 @@ func test_volumes_apply_to_the_buses() -> void:
 	assert_bool(AudioServer.is_bus_mute(sfx)).is_true()
 	assert_bool(AudioServer.is_bus_mute(music)).is_false()
 	assert_float(AudioServer.get_bus_volume_db(music)).is_equal_approx(-6.02, 0.01)
+
+
+func _jump_keyboard_codes() -> Array:
+	var codes: Array = []
+	for event: InputEvent in InputRebinder.events_for(Actions.JUMP, InputRebinder.Device.KEYBOARD):
+		codes.append(InputRebinder.code(event))
+	return codes
+
+
+func _rebind_jump_to_q() -> void:
+	var event: InputEventKey = InputEventKey.new()
+	event.physical_keycode = KEY_Q
+	InputRebinder.rebind(Actions.JUMP, InputRebinder.Device.KEYBOARD, event)
+
+
+func test_input_bindings_save_and_load() -> void:
+	var settings: Node = _make_settings()
+	_rebind_jump_to_q()
+	settings.save_input_bindings()
+	assert_int(_changes).is_equal(1)
+	var file: ConfigFile = ConfigFile.new()
+	file.load(TEST_PATH)
+	assert_bool(file.has_section("input")).is_true()
+	InputRebinder.reset_to_defaults()
+	assert_array(_jump_keyboard_codes()).is_equal([KEY_SPACE, KEY_Z])
+	var reloaded: Node = _make_settings()
+	reloaded.apply()
+	assert_array(_jump_keyboard_codes()).is_equal([KEY_Q])
+
+
+func test_reset_input_bindings_restores_defaults_and_removes_section() -> void:
+	var settings: Node = _make_settings()
+	_rebind_jump_to_q()
+	settings.save_input_bindings()
+	settings.reset_input_bindings()
+	assert_array(_jump_keyboard_codes()).is_equal([KEY_SPACE, KEY_Z])
+	assert_dict(settings.input_bindings).is_empty()
+	var file: ConfigFile = ConfigFile.new()
+	file.load(TEST_PATH)
+	assert_bool(file.has_section("input")).is_false()
+
+
+func test_reset_to_defaults_clears_input_bindings() -> void:
+	var settings: Node = _make_settings()
+	_rebind_jump_to_q()
+	settings.save_input_bindings()
+	settings.reset_to_defaults()
+	assert_dict(settings.input_bindings).is_empty()
+	assert_array(_jump_keyboard_codes()).is_equal([KEY_SPACE, KEY_Z])
+	var file: ConfigFile = ConfigFile.new()
+	file.load(TEST_PATH)
+	assert_bool(file.has_section("input")).is_false()
