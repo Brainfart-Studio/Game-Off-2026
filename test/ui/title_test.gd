@@ -120,3 +120,25 @@ func test_pages_fit_the_view() -> void:
 	(_node("CreditsButton") as Button).pressed.emit()
 	await _settle()
 	assert_array(UiLayout.outside_view(_title)).is_empty()
+
+
+func test_options_opens_from_the_main_page() -> void:
+	(_node("OptionsButton") as Button).pressed.emit()
+	assert_bool(_page("Options").visible).is_true()
+	assert_bool(_page("Main").visible).is_false()
+
+
+func test_options_controls_and_cancel_twice_return_to_main() -> void:
+	_node("OptionsButton").grab_focus()
+	(_node("OptionsButton") as Button).pressed.emit()
+	await await_idle_frame()
+	(_page("Options").get_node("%Controls") as Button).pressed.emit()
+	await await_idle_frame()
+	assert_bool(_page("Controls").visible).is_true()
+	_runner.simulate_action_pressed("ui_cancel")
+	await await_idle_frame()
+	assert_bool(_page("Options").visible).is_true()
+	_runner.simulate_action_pressed("ui_cancel")
+	await await_idle_frame()
+	assert_bool(_page("Main").visible).is_true()
+	assert_bool(_node("OptionsButton").has_focus()).is_true()
