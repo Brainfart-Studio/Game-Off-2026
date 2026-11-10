@@ -66,6 +66,10 @@ func _send_key(keycode: Key) -> void:
 	Input.parse_input_event(event)
 	Input.flush_buffered_events()
 	await await_idle_frame()
+	var release: InputEventKey = event.duplicate() as InputEventKey
+	release.pressed = false
+	Input.parse_input_event(release)
+	Input.flush_buffered_events()
 
 
 func _send_button(index: JoyButton) -> void:
@@ -75,6 +79,10 @@ func _send_button(index: JoyButton) -> void:
 	Input.parse_input_event(event)
 	Input.flush_buffered_events()
 	await await_idle_frame()
+	var release: InputEventJoypadButton = event.duplicate() as InputEventJoypadButton
+	release.pressed = false
+	Input.parse_input_event(release)
+	Input.flush_buffered_events()
 
 
 func test_rows_show_the_current_bindings() -> void:
