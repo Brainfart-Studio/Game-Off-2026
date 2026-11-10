@@ -33,6 +33,8 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds), `HUD` (timer color) | Once per second from `warning_time` seconds left down to 1, when that second begins |
 | `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset), `Results` | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
 | `run_restart_requested` | none | `Results` | `Run` | A restart is requested. `Run` unpauses and reloads the scene |
+| `run_pause_requested` | `paused: bool` | `PauseMenu` | `Run` | The player asks to pause or resume. `Run` ignores a request that matches the current state, or a pause outside Starting and Running |
+| `run_paused` | `paused: bool` | `Run` | `PauseMenu` | The run was paused or resumed. `Game.paused` already holds the new value |
 | `title_requested` | none | `Results` | `Run` | The Title button was pressed. `Run` resets `Game`, unpauses, and changes to the title scene |
 | `title_opened` | none | `Title` | `Audio` | The title screen is ready. `Audio` plays the title music |
 

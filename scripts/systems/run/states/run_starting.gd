@@ -14,6 +14,8 @@ func enter(previous: StringName) -> void:
 
 
 func update(delta: float) -> void:
+	if Game.paused:
+		return
 	_elapsed += delta
 	if run.died or _elapsed >= run.config.start_delay:
 		machine.transition_to(&"Running")

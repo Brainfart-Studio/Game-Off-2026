@@ -16,6 +16,7 @@ func after_test() -> void:
 func test_reset_clears_every_field() -> void:
 	var content: Node2D = auto_free(Node2D.new())
 	_game.phase = _game.Phase.RUNNING
+	_game.paused = true
 	_game.world = World.Id.COMBAT
 	_game.player = auto_free(Node2D.new())
 	_game.run_duration = 60.0
@@ -23,6 +24,7 @@ func test_reset_clears_every_field() -> void:
 	_game.register_content(World.Id.COMBAT, content)
 	_game.reset()
 	assert_int(_game.phase).is_equal(_game.Phase.NONE)
+	assert_bool(_game.paused).is_false()
 	assert_int(_game.world).is_equal(World.Id.PEACEFUL)
 	assert_object(_game.player).is_null()
 	assert_float(_game.run_duration).is_equal(0.0)
@@ -81,3 +83,11 @@ func test_is_combat_live_for_each_phase_and_world() -> void:
 			_game.world = world
 			var expected: bool = phase == _game.Phase.RUNNING and world == World.Id.COMBAT
 			assert_bool(_game.is_combat_live()).is_equal(expected)
+
+
+func test_combat_is_not_live_while_paused() -> void:
+	_game.phase = _game.Phase.RUNNING
+	_game.world = World.Id.COMBAT
+	assert_bool(_game.is_combat_live()).is_true()
+	_game.paused = true
+	assert_bool(_game.is_combat_live()).is_false()

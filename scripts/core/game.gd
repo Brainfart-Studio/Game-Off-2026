@@ -1,12 +1,14 @@
 extends Node
 ## Run state (autoload `Game`).
 ##
-## Run is the only writer of `phase`, `run_duration`, and `time_left`. `world` and `player`
+## Run is the only writer of `phase`, `paused`, `run_duration`, and `time_left`. `world` and `player`
 ## follow events. Everything else only reads.
 
 enum Phase { NONE, STARTING, RUNNING, ENDED }
 
 var phase: Phase = Phase.NONE
+## True while the run is paused. Run writes it on `run_pause_requested`.
+var paused: bool = false
 var world: World.Id = World.Id.PEACEFUL
 var player: Node2D
 var run_duration: float = 0.0
@@ -23,6 +25,7 @@ func _ready() -> void:
 ## Puts every field back to its default. Run calls this first when the run scene loads.
 func reset() -> void:
 	phase = Phase.NONE
+	paused = false
 	world = World.Id.PEACEFUL
 	player = null
 	run_duration = 0.0
@@ -55,9 +58,9 @@ func run_progress() -> float:
 	return clampf(1.0 - time_left / run_duration, 0.0, 1.0)
 
 
-## True while the run is live and the combat world is shown.
+## True while the run is live, not paused, and the combat world is shown.
 func is_combat_live() -> bool:
-	return phase == Phase.RUNNING and world == World.Id.COMBAT
+	return phase == Phase.RUNNING and not paused and world == World.Id.COMBAT
 
 
 func _on_world_shifted(to: World.Id) -> void:

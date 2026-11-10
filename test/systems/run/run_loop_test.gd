@@ -8,6 +8,7 @@ var _started: int = 0
 var _times: Array[float] = []
 var _warnings: Array[int] = []
 var _results: Array[RunResult] = []
+var _paused_events: Array[bool] = []
 
 
 func before_test() -> void:
@@ -17,10 +18,12 @@ func before_test() -> void:
 	_times.clear()
 	_warnings.clear()
 	_results.clear()
+	_paused_events.clear()
 	Events.run_started.connect(_on_started)
 	Events.time_changed.connect(_on_time_changed)
 	Events.time_warning.connect(_on_time_warning)
 	Events.run_ended.connect(_on_ended)
+	Events.run_paused.connect(_on_paused)
 	var scene: Run = auto_free((load("res://scenes/run.tscn") as PackedScene).instantiate()) as Run
 	var config: RunConfig = scene.config.duplicate() as RunConfig
 	config.duration = 0.6
@@ -28,7 +31,7 @@ func before_test() -> void:
 	config.death_delay = 0.1
 	config.warning_time = 1
 	scene.config = config
-	scene.pause_tree_on_end = false
+	scene.pauses_tree = false
 	_runner = scene_runner(scene)
 	_run = scene
 
@@ -38,6 +41,7 @@ func after_test() -> void:
 	Events.time_changed.disconnect(_on_time_changed)
 	Events.time_warning.disconnect(_on_time_warning)
 	Events.run_ended.disconnect(_on_ended)
+	Events.run_paused.disconnect(_on_paused)
 	Feedback.enabled = true
 	Scenes.changes_enabled = true
 	Scenes.last_request = ""
@@ -58,6 +62,10 @@ func _on_time_warning(seconds_left: int) -> void:
 
 func _on_ended(result: RunResult) -> void:
 	_results.append(result)
+
+
+func _on_paused(paused: bool) -> void:
+	_paused_events.append(paused)
 
 
 func _wait_for_phase(phase: Game.Phase) -> void:
@@ -146,3 +154,37 @@ func test_title_request_resets_the_game_and_requests_the_title() -> void:
 	Events.title_requested.emit()
 	assert_int(Game.phase).is_equal(Game.Phase.NONE)
 	assert_str(Scenes.last_request).is_equal(Scenes.TITLE)
+
+
+func test_pause_request_pauses_and_announces_once() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	Events.run_pause_requested.emit(true)
+	assert_bool(Game.paused).is_true()
+	assert_array(_paused_events).is_equal([true])
+	Events.run_pause_requested.emit(true)
+	assert_array(_paused_events).is_equal([true])
+
+
+func test_resume_request_clears_the_pause_and_announces() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	Events.run_pause_requested.emit(true)
+	Events.run_pause_requested.emit(false)
+	assert_bool(Game.paused).is_false()
+	assert_array(_paused_events).is_equal([true, false])
+
+
+func test_time_left_holds_while_paused() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	Events.run_pause_requested.emit(true)
+	var held: float = Game.time_left
+	for i: int in 10:
+		await get_tree().process_frame
+	assert_float(Game.time_left).is_equal(held)
+	assert_int(Game.phase).is_equal(Game.Phase.RUNNING)
+
+
+func test_pause_request_after_the_run_ended_does_nothing() -> void:
+	await _wait_for_phase(Game.Phase.ENDED)
+	Events.run_pause_requested.emit(true)
+	assert_bool(Game.paused).is_false()
+	assert_array(_paused_events).is_empty()

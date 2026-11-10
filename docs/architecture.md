@@ -190,7 +190,11 @@ Listeners are connected in `_ready`, so they all exist before the first signal f
 
 - `Starting`: emits `run_started` and `time_changed`, waits `start_delay` (or leaves at once if the player already died), then `Running`.
 - `Running`: lowers `Game.time_left` each frame, emits `time_changed` when the whole seconds change and `time_warning` for the last `warning_time` seconds, and goes to `Ended` at 0. After `player_died` the timer stops and `Ended` follows after `death_delay`.
-- `Ended`: pauses the tree (unless `Run.pause_tree_on_end` is off, for tests) and emits `run_ended` with a `RunResult`.
+- `Ended`: pauses the tree (unless `Run.pauses_tree` is off, for tests) and emits `run_ended` with a `RunResult`.
+
+Pause is a flag, not a state. `Game.paused` is written only by `Run.set_paused`, which answers `run_pause_requested(paused)`. It only pauses while `Game.phase` is `Starting` or `Running`, ignores a request that matches the current value, pauses the tree when `Run.pauses_tree` is on (tests turn it off), and emits `run_paused(paused)`. `Starting` and `Running` return at once from `update` while `Game.paused`, and `Game.is_combat_live()` is false. Music and SFX keep playing.
+
+`PauseMenu` (a `CanvasLayer`, layer 60, process mode always) only requests pausing; `Run` owns the state. The pause action pauses when `can_pause()` (not paused, phase `Starting` or `Running`) and resumes when the menu is shown. Losing window focus while hidden pauses. Its `MenuStack` (`can_close_root`) sees `ui_cancel` before the menu does, so Escape and B go back one page and resume from the root, while Start resumes from any page. Pages: Pause (Resume, Options, Restart, Quit to Title), plus the shared `OptionsPage` and `ControlsPage`. Restart and Quit emit `run_restart_requested` and `title_requested`.
 
 Restart: `run_restart_requested` makes `Run` unpause the tree and reload the scene, so every module starts fresh. `Feedback` resets itself on `run_started` and `run_ended`.
 
@@ -213,6 +217,7 @@ Run                  composition root, script run.gd
   Score
   HUD              CanvasLayer, layer 10, reads events only
   Results          CanvasLayer, hidden until run_ended
+  PauseMenu        CanvasLayer, layer 60, hidden until run_paused
   DebugOverlay
   StateMachine     Starting, Running, Ended
 ```
