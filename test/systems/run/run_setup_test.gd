@@ -10,7 +10,7 @@ func before_test() -> void:
 	Events.arena_bounds_changed.connect(_on_bounds)
 	Events.player_spawned.connect(_on_spawned)
 	Events.world_shifted.connect(_on_shifted)
-	_runner = scene_runner("res://scenes/main.tscn")
+	_runner = scene_runner("res://scenes/run.tscn")
 	_run = _runner.scene() as Run
 	await await_idle_frame()
 

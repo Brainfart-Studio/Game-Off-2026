@@ -20,7 +20,7 @@ func before_test() -> void:
 	Events.time_changed.connect(_on_time_changed)
 	Events.time_warning.connect(_on_time_warning)
 	Events.run_ended.connect(_on_ended)
-	var scene: Run = auto_free((load("res://scenes/main.tscn") as PackedScene).instantiate()) as Run
+	var scene: Run = auto_free((load("res://scenes/run.tscn") as PackedScene).instantiate()) as Run
 	var config: RunConfig = scene.config.duplicate() as RunConfig
 	config.duration = 0.6
 	config.start_delay = 0.05
