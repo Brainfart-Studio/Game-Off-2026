@@ -18,7 +18,6 @@ const ACTION_NAMES := {
 	Actions.SHIFT: "SHIFT",
 	Actions.PAUSE: "PAUSE",
 }
-const CONFIRM_SOUND := &"ui_confirm"
 const BACK_SOUND := &"ui_back"
 const NAME_WIDTH := 56.0
 const CELL_WIDTH := 72.0
