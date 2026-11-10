@@ -47,6 +47,8 @@ const GLYPH_PATH := "res://art/ui/glyphs/glyph_pad_%s.png"
 const UNKNOWN_BUTTON := "BUTTON %d"
 const NONE := "-"
 const SEPARATOR := "/"
+## The headless display server cannot map physical keys to layout keys, so labels use the physical key.
+const HEADLESS_DISPLAY := "headless"
 
 
 ## True when `event` belongs to `device`: a key for the keyboard, a button for the gamepad.
@@ -164,7 +166,9 @@ static func label(event: InputEvent) -> String:
 		var index: int = code(event)
 		return BUTTON_NAMES.get(index, UNKNOWN_BUTTON % index)
 	if event is InputEventKey:
-		var keycode: Key = DisplayServer.keyboard_get_keycode_from_physical(code(event) as Key)
+		var keycode: Key = code(event) as Key
+		if DisplayServer.get_name() != HEADLESS_DISPLAY:
+			keycode = DisplayServer.keyboard_get_keycode_from_physical(keycode)
 		return OS.get_keycode_string(keycode).to_upper()
 	return NONE
 
