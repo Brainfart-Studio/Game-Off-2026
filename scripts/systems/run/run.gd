@@ -33,6 +33,7 @@ func _ready() -> void:
 	Events.score_changed.connect(_on_score_changed)
 	Events.combo_changed.connect(_on_combo_changed)
 	Events.run_restart_requested.connect(restart)
+	Events.run_pause_requested.connect(set_paused)
 	Events.title_requested.connect(go_to_title)
 	machine.transition_to(&"Starting")
 
@@ -46,6 +47,19 @@ func build_result() -> RunResult:
 	result.time_survived = Game.run_duration - Game.time_left
 	result.died = died
 	return result
+
+
+## Pauses or resumes the run. Pausing only works while the run is starting or running. Pauses the
+## tree when `pauses_tree` is on, and announces the change on `run_paused`.
+func set_paused(value: bool) -> void:
+	if value == Game.paused:
+		return
+	if value and Game.phase != Game.Phase.STARTING and Game.phase != Game.Phase.RUNNING:
+		return
+	Game.paused = value
+	if pauses_tree:
+		get_tree().paused = value
+	Events.run_paused.emit(value)
 
 
 ## Unpauses and reloads the run scene. Every module starts fresh.
