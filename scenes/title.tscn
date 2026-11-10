@@ -1,0 +1,189 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/title.gd" id="1_title"]
+[ext_resource type="Resource" path="res://config/ui/ui_config.tres" id="2_cfg"]
+[ext_resource type="Script" path="res://scripts/ui/menu_stack.gd" id="3_stack"]
+[ext_resource type="Script" path="res://scripts/ui/menu_page.gd" id="4_page"]
+[ext_resource type="Script" path="res://scripts/ui/high_score_list.gd" id="5_list"]
+
+[node name="Title" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_title")
+config = ExtResource("2_cfg")
+
+[node name="Background" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Logo" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -96.0
+offset_top = 12.0
+offset_right = 96.0
+offset_bottom = 76.0
+grow_horizontal = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LogoText" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -96.0
+offset_top = 12.0
+offset_right = 96.0
+offset_bottom = 76.0
+grow_horizontal = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Menu" type="Control" parent="." node_paths=PackedStringArray("root_page")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_stack")
+root_page = NodePath("Main")
+
+[node name="Main" type="Control" parent="Menu" node_paths=PackedStringArray("first_focus")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_page")
+first_focus = NodePath("Buttons/Play")
+
+[node name="Buttons" type="VBoxContainer" parent="Menu/Main"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -60.0
+offset_top = 88.0
+offset_right = 60.0
+offset_bottom = 168.0
+grow_horizontal = 2
+theme_override_constants/separation = 2
+
+[node name="Play" type="Button" parent="Menu/Main/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HighScoresButton" type="Button" parent="Menu/Main/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CreditsButton" type="Button" parent="Menu/Main/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HighScores" type="Control" parent="Menu" node_paths=PackedStringArray("first_focus")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_page")
+first_focus = NodePath("Center/Panel/VBox/ScoresBack")
+
+[node name="Center" type="CenterContainer" parent="Menu/HighScores"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Menu/HighScores/Center"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Menu/HighScores/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ScoresHeading" type="Label" parent="Menu/HighScores/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HighScoreList" type="VBoxContainer" parent="Menu/HighScores/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+script = ExtResource("5_list")
+
+[node name="ScoresBack" type="Button" parent="Menu/HighScores/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Credits" type="Control" parent="Menu" node_paths=PackedStringArray("first_focus")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_page")
+first_focus = NodePath("Center/Panel/VBox/CreditsBack")
+
+[node name="Center" type="CenterContainer" parent="Menu/Credits"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Menu/Credits/Center"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Menu/Credits/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CreditsHeading" type="Label" parent="Menu/Credits/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="CreditsText" type="Label" parent="Menu/Credits/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="CreditsBack" type="Button" parent="Menu/Credits/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
