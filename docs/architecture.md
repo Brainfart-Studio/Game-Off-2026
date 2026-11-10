@@ -119,6 +119,12 @@ These are classes with static functions, not autoloads.
 
 `Save` (autoload, `scripts/core/save.gd`) keeps the top 10 high scores and the last initials in `user://save.cfg` (a browser reload keeps it on the web build). It loads in `_ready`. `qualifies(score)` says whether a score makes the table, and `add_high_score(initials, score)` inserts it, saves, and returns its rank. An equal score ranks below the existing one.
 
+## Settings
+
+`Settings` (autoload, `scripts/core/settings.gd`, between `Game` and `Audio`) keeps the player settings in `user://settings.cfg`: three volumes in steps of 0 to 10 (`Master`, `Music`, `SFX`) and the shake and flash toggles. The autoload order is `Events`, `Game`, `Settings`, `Audio`, `Feedback`, `Save`, so it is ready before `Feedback` reads it. A missing or unreadable file gives the defaults (10, 10, 10, on, on).
+
+Every change saves at once and emits `settings_changed`. `set_volume(bus, steps)` clamps the steps and sets the bus volume (`volume_db`: 0 is muted, 10 is 0 dB). The `UI` bus sends into `SFX`, so the `SFX` volume scales menu sounds too. `Feedback` copies the two toggles on `_ready` and on every `settings_changed`.
+
 ## UI
 
 UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script. A screen centers a `PanelContainer` in a `CenterContainer`; the theme draws the panel (9-slice, `panel_margin` border and inner space) and gives buttons compact margins. The game view is 320x180.

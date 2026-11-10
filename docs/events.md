@@ -27,6 +27,7 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `combo_changed` | `fill: float`, `multiplier: int` | `Score` | `Run` (best multiplier), `HUD` | The combo bar or multiplier changed, including each frame the bar drains, and once when the run starts |
 | `combo_raised` | `multiplier: int` | `Score` | `Audio`, `Feedback` (bound entries) | The bar filled and the multiplier went up one step. Not fired at the cap |
 | `combo_broken` | none | `Score` | `Audio` (bound sounds) | A multiplier above 1 was lost, by draining to 0 or by the player taking damage |
+| `settings_changed` | none | `Settings` | `Feedback` (copies the toggles) | A volume or a toggle changed to a new value, or the settings were reset to defaults |
 | `run_started` | none | `RunStarting` state | `Feedback` (reset), `Economy`, `Score`, `HUD` (timer color) | The run enters `Starting`, right after the run setup order. Modules announce their starting values on it |
 | `time_changed` | `left: float` | `RunStarting`, `RunRunning` | `HUD` | Once when the run starts, then each time the whole seconds left change, and at 0 |
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds), `HUD` (timer color) | Once per second from `warning_time` seconds left down to 1, when that second begins |

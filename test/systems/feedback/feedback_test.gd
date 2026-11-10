@@ -14,6 +14,9 @@ func before_test() -> void:
 func after_test() -> void:
 	Feedback.reset()
 	Feedback.enabled = true
+	Settings.shake_enabled = true
+	Settings.flash_enabled = true
+	Events.settings_changed.emit()
 	Feedback.shake_enabled = true
 	Feedback.flash_enabled = true
 	get_tree().current_scene = _previous_scene
@@ -115,3 +118,11 @@ func test_spawn_fx_effect_with_a_position_adds_a_sprite() -> void:
 	assert_int(_scene.get_child_count()).is_equal(1)
 	var sprite: FxSprite = _scene.get_child(0) as FxSprite
 	assert_vector(sprite.global_position).is_equal(Vector2(11, 22))
+
+
+func test_toggles_follow_settings() -> void:
+	Settings.shake_enabled = false
+	Settings.flash_enabled = false
+	Events.settings_changed.emit()
+	assert_bool(Feedback.shake_enabled).is_false()
+	assert_bool(Feedback.flash_enabled).is_false()
