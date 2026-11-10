@@ -112,7 +112,7 @@ These are classes with static functions, not autoloads.
 | `Display` | View size from project settings. Scripts never hard-code the resolution |
 | `Groups` | Node group names, used for lookups |
 | `Actions` | Input action names. Scripts never use action strings or raw keys |
-| `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline), once per config |
+| `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline, panel box, compact buttons), once per config |
 | `EventRouter` | Connects config-driven event keys to one handler and finds the binding for an emitted event |
 
 ## Save
@@ -121,9 +121,9 @@ These are classes with static functions, not autoloads.
 
 ## UI
 
-UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script.
+UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script. A screen centers a `PanelContainer` in a `CenterContainer`; the theme draws the panel (9-slice, `panel_margin` border and inner space) and gives buttons compact margins. The game view is 320x180.
 
-`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows the run's numbers. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
+`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows a centered panel in two columns: the run's numbers and `InitialsEntry` on the left, `HighScoreList` on the right, `Restart` below. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
 
 `HUD` (a `CanvasLayer`, layer 10) shows the run in progress: health pips, timer, world name, score, combo bar with the multiplier, and currency. It reads events only and never polls: `player_health_changed`, `time_changed`, `time_warning`, `run_started`, `world_shifted`, `score_changed`, `combo_changed`, and `wallet_changed`. Each widget is set by its event, and the modules announce their starting values on `run_started`, so the HUD needs no direct reference to any of them. The pips are rebuilt whenever the max health changes.
 
