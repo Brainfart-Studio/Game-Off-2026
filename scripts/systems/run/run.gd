@@ -4,8 +4,8 @@ extends Node2D
 ## the only script that calls setup methods on the modules it composes (R-059).
 
 @export var config: RunConfig
-## Pauses the tree when the run ends. Tests turn it off.
-@export var pause_tree_on_end: bool = true
+## Pauses the tree when the run is paused or ends. Tests turn it off.
+@export var pauses_tree: bool = true
 
 ## True once the player has died this run.
 var died: bool = false

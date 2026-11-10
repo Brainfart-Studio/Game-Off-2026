@@ -28,7 +28,7 @@ func before_test() -> void:
 	config.death_delay = 0.1
 	config.warning_time = 1
 	scene.config = config
-	scene.pause_tree_on_end = false
+	scene.pauses_tree = false
 	_runner = scene_runner(scene)
 	_run = scene
 

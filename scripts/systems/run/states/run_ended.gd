@@ -6,6 +6,6 @@ extends RunState
 func enter(previous: StringName) -> void:
 	super.enter(previous)
 	Game.phase = Game.Phase.ENDED
-	if run.pause_tree_on_end:
+	if run.pauses_tree:
 		get_tree().paused = true
 	Events.run_ended.emit(run.build_result())
