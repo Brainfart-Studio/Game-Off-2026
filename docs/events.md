@@ -33,6 +33,8 @@ Every cross-module signal is declared in `scripts/core/events.gd` (autoload `Eve
 | `time_warning` | `seconds_left: int` | `RunRunning` | `Audio` (bound sounds), `HUD` (timer color) | Once per second from `warning_time` seconds left down to 1, when that second begins |
 | `run_ended` | `result: RunResult` | `RunEnded` state | `Audio` (bound sounds), `Feedback` (reset), `Results` | The timer reaches 0, or `death_delay` runs out after the player died. The tree is paused first |
 | `run_restart_requested` | none | `Results` | `Run` | A restart is requested. `Run` unpauses and reloads the scene |
+| `title_requested` | none | `Results` | `Run` | The Title button was pressed. `Run` resets `Game`, unpauses, and changes to the title scene |
+| `title_opened` | none | `Title` | `Audio` | The title screen is ready. `Audio` plays the title music |
 
 `Audio` listens to the signals named in `sound_config.tres` `bindings` (see [tuning.md](tuning.md)), plus `world_shifted` for music. A bound event can also be a world event with a variant key, such as `world_shift_started.combat`.
 

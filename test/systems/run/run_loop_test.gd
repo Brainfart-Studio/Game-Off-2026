@@ -12,6 +12,7 @@ var _results: Array[RunResult] = []
 
 func before_test() -> void:
 	Feedback.enabled = false
+	Scenes.changes_enabled = false
 	_started = 0
 	_times.clear()
 	_warnings.clear()
@@ -20,7 +21,7 @@ func before_test() -> void:
 	Events.time_changed.connect(_on_time_changed)
 	Events.time_warning.connect(_on_time_warning)
 	Events.run_ended.connect(_on_ended)
-	var scene: Run = auto_free((load("res://scenes/main.tscn") as PackedScene).instantiate()) as Run
+	var scene: Run = auto_free((load("res://scenes/run.tscn") as PackedScene).instantiate()) as Run
 	var config: RunConfig = scene.config.duplicate() as RunConfig
 	config.duration = 0.6
 	config.start_delay = 0.05
@@ -38,6 +39,8 @@ func after_test() -> void:
 	Events.time_warning.disconnect(_on_time_warning)
 	Events.run_ended.disconnect(_on_ended)
 	Feedback.enabled = true
+	Scenes.changes_enabled = true
+	Scenes.last_request = ""
 	Game.reset()
 
 
@@ -136,3 +139,10 @@ func test_score_and_best_multiplier_appear_in_the_result() -> void:
 	assert_int(_results.size()).is_equal(1)
 	assert_int(_results[0].score).is_equal(250)
 	assert_int(_results[0].best_multiplier).is_equal(3)
+
+
+func test_title_request_resets_the_game_and_requests_the_title() -> void:
+	await _wait_for_phase(Game.Phase.RUNNING)
+	Events.title_requested.emit()
+	assert_int(Game.phase).is_equal(Game.Phase.NONE)
+	assert_str(Scenes.last_request).is_equal(Scenes.TITLE)

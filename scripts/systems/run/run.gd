@@ -33,6 +33,7 @@ func _ready() -> void:
 	Events.score_changed.connect(_on_score_changed)
 	Events.combo_changed.connect(_on_combo_changed)
 	Events.run_restart_requested.connect(restart)
+	Events.title_requested.connect(go_to_title)
 	machine.transition_to(&"Starting")
 
 
@@ -51,6 +52,13 @@ func build_result() -> RunResult:
 func restart() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+## Resets the game state and goes back to the title.
+func go_to_title() -> void:
+	Game.reset()
+	get_tree().paused = false
+	Scenes.change(get_tree(), Scenes.TITLE)
 
 
 func _on_player_died() -> void:

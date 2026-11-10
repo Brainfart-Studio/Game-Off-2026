@@ -69,3 +69,8 @@ func validate() -> PackedStringArray:
 		if bindings[key] == &"":
 			warnings.append("binding '%s' has an empty sound id" % key)
 	return warnings
+
+
+## Resource path of the title screen music: `<music_dir>/music_title.ogg`.
+func title_music_path() -> String:
+	return "%s/music_title.ogg" % music_dir

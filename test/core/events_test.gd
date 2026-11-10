@@ -8,6 +8,8 @@ const SIGNALS: Array[String] = [
 	"player_spawned",
 	"stats_changed",
 	"settings_changed",
+	"title_requested",
+	"title_opened",
 ]
 
 

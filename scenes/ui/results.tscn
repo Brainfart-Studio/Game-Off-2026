@@ -96,3 +96,7 @@ alignment = 1
 [node name="Restart" type="Button" parent="Root/Center/Panel/VBox/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="ToTitle" type="Button" parent="Root/Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
