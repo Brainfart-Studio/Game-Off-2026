@@ -122,8 +122,27 @@ func reset_to_defaults() -> void:
 	Events.settings_changed.emit()
 
 
+## Volume in dB for `steps`: muted at 0, else linear steps over `VOLUME_STEPS` (10 is 0 dB).
+static func volume_db(steps: int) -> float:
+	if steps <= 0:
+		return MUTED_DB
+	return linear_to_db(float(steps) / VOLUME_STEPS)
+
+
 func _apply_volumes() -> void:
-	pass
+	var levels: Dictionary[StringName, int] = {
+		BUS_MASTER: master_volume,
+		BUS_MUSIC: music_volume,
+		BUS_SFX: sfx_volume,
+	}
+	for bus: StringName in levels:
+		var index: int = AudioServer.get_bus_index(bus)
+		if index < 0:
+			push_error("Settings: missing bus %s" % bus)
+			continue
+		var steps: int = levels[bus]
+		AudioServer.set_bus_volume_db(index, volume_db(steps))
+		AudioServer.set_bus_mute(index, steps <= 0)
 
 
 func _read_volume(key: String) -> int:
