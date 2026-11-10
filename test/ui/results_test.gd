@@ -1,5 +1,7 @@
 extends GdUnitTestSuite
 
+const UiLayout = preload("res://test/ui/ui_layout.gd")
+
 const TEST_PATH: String = "user://results_test.cfg"
 const DEFAULT_PATH: String = "user://save.cfg"
 
@@ -106,3 +108,19 @@ func test_restart_emits_the_restart_request() -> void:
 	_end_run(0)
 	(_node("Restart") as Button).pressed.emit()
 	assert_int(_restarts).is_equal(1)
+
+
+func test_full_results_fit_the_view() -> void:
+	for i: int in range(10):
+		Save.add_high_score("AAA", 100 * (i + 1))
+	_end_run(5000)
+	assert_bool(_node("Initials").visible).is_true()
+	await await_idle_frame()
+	await await_idle_frame()
+	assert_array(UiLayout.outside_view(_results)).is_empty()
+	(_node("Initials") as InitialsEntry).confirm()
+	assert_bool(_node("HighScores").visible).is_true()
+	assert_bool(_node("Restart").visible).is_true()
+	await await_idle_frame()
+	await await_idle_frame()
+	assert_array(UiLayout.outside_view(_results)).is_empty()

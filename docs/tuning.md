@@ -257,7 +257,8 @@ Enemy `score_value` is set per enemy (see Walker). The combo sounds bind `combo_
 | `highlight_color` | The selected letter, the focused button, and the new high score row |
 | `dim_color` | Empty list rows and disabled buttons |
 | `panel_path` | Resource path of the 9-slice panel texture |
-| `panel_margin` | Width of the panel's border on every side (px) |
+| `panel_margin` | Width of the panel border and the space inside it (px) |
+| `panel_size` | Size of the fallback panel box when the art is missing (px). Must be larger than twice `panel_margin` |
 
 The high score table keeps the best 10 scores and the last initials typed, in `user://save.cfg`. The table size is fixed in `Save` (`MAX_SCORES`), not a config.
 

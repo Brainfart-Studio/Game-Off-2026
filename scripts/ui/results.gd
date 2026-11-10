@@ -20,7 +20,6 @@ const SECONDS_PER_MINUTE := 60
 var _score: int = 0
 
 @onready var _root: Control = %Root
-@onready var _panel: NinePatchRect = %Panel
 @onready var _title: Label = %Title
 @onready var _score_label: Label = %Score
 @onready var _kills: Label = %Kills
@@ -35,11 +34,6 @@ var _score: int = 0
 func _ready() -> void:
 	config.check()
 	_root.theme = UiTheme.build(config)
-	_panel.texture = AssetLoader.texture(config.panel_path, Vector2i(48, 48), "ui_panel")
-	_panel.patch_margin_left = config.panel_margin
-	_panel.patch_margin_top = config.panel_margin
-	_panel.patch_margin_right = config.panel_margin
-	_panel.patch_margin_bottom = config.panel_margin
 	_initials.config = config
 	_high_scores.config = config
 	_new_high_score.text = NEW_HIGH_SCORE
