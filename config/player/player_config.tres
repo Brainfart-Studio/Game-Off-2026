@@ -107,8 +107,8 @@ loop = false
 script = ExtResource("2_def")
 id = &"player_death"
 path = "res://art/player/player_death.png"
-frame_size = Vector2i(32, 32)
-frames = 6
+frame_size = Vector2i(24, 24)
+frames = 5
 fps = 10.0
 loop = false
 
