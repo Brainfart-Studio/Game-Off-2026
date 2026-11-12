@@ -9,7 +9,7 @@ id = &"pickup_currency"
 path = "res://art/pickups/pickup_currency.png"
 frame_size = Vector2i(12, 12)
 frames = 6
-fps = 12.0
+fps = 6.0
 loop = true
 
 [resource]
