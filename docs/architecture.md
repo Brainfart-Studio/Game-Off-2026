@@ -87,7 +87,7 @@ Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scen
 
 ## ActorSprite
 
-`ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
+`ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, shifted by the animation's `draw_offset` (for frames where the character is not at the bottom edge), then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
 
 In the editor, `ActorSprite` draws the first frame of `preview_animation` from the config at `preview_config` (or its labeled box), so each character shows in its scene. The preview is only drawn, never saved into the scene.
 
