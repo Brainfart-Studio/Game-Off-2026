@@ -65,3 +65,8 @@ func test_missing_sound_plays_nothing_and_raises_no_error() -> void:
 	for voice: AudioStreamPlayer in _audio._voices:
 		assert_bool(voice.playing).is_false()
 	assert_bool(_audio._last_played.has(&"no_such_sound")).is_false()
+
+
+func test_title_opened_selects_the_title_music() -> void:
+	Events.title_opened.emit()
+	assert_str(_audio._music_path).is_equal(_config.title_music_path())

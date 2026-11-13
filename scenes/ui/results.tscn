@@ -22,76 +22,81 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Panel" type="NinePatchRect" parent="Root"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -115.0
-offset_right = 160.0
-offset_bottom = 115.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+[node name="Center" type="CenterContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="Root/Panel/Margin"]
+[node name="Panel" type="PanelContainer" parent="Root/Center"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="VBox" type="VBoxContainer" parent="Root/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Columns" type="HBoxContainer" parent="Root/Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Stats" type="VBoxContainer" parent="Root/Center/Panel/VBox/Columns"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Score" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="Score" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Kills" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="Kills" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Multiplier" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="Multiplier" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Time" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="Time" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="NewHighScore" type="Label" parent="Root/Panel/Margin/VBox"]
+[node name="NewHighScore" type="Label" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Initials" type="HBoxContainer" parent="Root/Panel/Margin/VBox"]
+[node name="Initials" type="HBoxContainer" parent="Root/Center/Panel/VBox/Columns/Stats"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("3_initials")
 
-[node name="HighScores" type="VBoxContainer" parent="Root/Panel/Margin/VBox"]
+[node name="HighScores" type="VBoxContainer" parent="Root/Center/Panel/VBox/Columns"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 0
 script = ExtResource("4_list")
 
-[node name="Restart" type="Button" parent="Root/Panel/Margin/VBox"]
+[node name="Buttons" type="HBoxContainer" parent="Root/Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Restart" type="Button" parent="Root/Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ToTitle" type="Button" parent="Root/Center/Panel/VBox/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2

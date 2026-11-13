@@ -10,4 +10,4 @@ text_color = Color(1, 1, 1, 1)
 highlight_color = Color(1, 0.85, 0.3, 1)
 dim_color = Color(0.6, 0.6, 0.6, 1)
 panel_path = "res://art/ui/ui_panel.png"
-panel_margin = 16
+panel_margin = 8

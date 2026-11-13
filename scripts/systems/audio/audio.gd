@@ -35,6 +35,7 @@ func _ready() -> void:
 	_music_b = _make_music_player(&"MusicB")
 	EventRouter.connect_keys(Events, config.bindings.keys(), _on_event)
 	Events.world_shifted.connect(_on_world_shifted)
+	Events.title_opened.connect(_on_title_opened)
 
 
 ## Plays the sound `id`, unless it is cooling down or has too many copies playing.
@@ -98,9 +99,16 @@ func _make_music_player(player_name: StringName) -> AudioStreamPlayer:
 	return player
 
 
-## Crossfades to the music of the world just shown. A missing file fades the music out.
 func _on_world_shifted(to: World.Id) -> void:
-	var path: String = config.music_path(to)
+	_play_music(config.music_path(to))
+
+
+func _on_title_opened() -> void:
+	_play_music(config.title_music_path())
+
+
+## Crossfades to the track at `path`. A missing file fades the music out.
+func _play_music(path: String) -> void:
 	if path == _music_path:
 		return
 	_music_path = path

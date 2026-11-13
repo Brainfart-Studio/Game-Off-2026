@@ -16,6 +16,8 @@ func enter(previous: StringName) -> void:
 
 
 func update(delta: float) -> void:
+	if Game.paused:
+		return
 	if run.died:
 		_death_elapsed += delta
 		if _death_elapsed >= run.config.death_delay:

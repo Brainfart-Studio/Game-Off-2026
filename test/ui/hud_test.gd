@@ -1,5 +1,7 @@
 extends GdUnitTestSuite
 
+const UiLayout = preload("res://test/ui/ui_layout.gd")
+
 var _hud: HUD
 
 
@@ -71,3 +73,15 @@ func test_time_warning_highlights_the_timer_until_the_next_run() -> void:
 	assert_object(timer.get_theme_color(&"font_color")).is_equal(_hud.config.highlight_color)
 	Events.run_started.emit()
 	assert_object(timer.get_theme_color(&"font_color")).is_equal(_hud.config.text_color)
+
+
+func test_blocks_fit_the_view_apart() -> void:
+	await await_idle_frame()
+	await await_idle_frame()
+	assert_array(UiLayout.outside_view(_hud)).is_empty()
+	var left: Rect2 = (_hud.get_node("Root/TopLeft") as Control).get_global_rect()
+	var center: Rect2 = (_hud.get_node("Root/TopCenter") as Control).get_global_rect()
+	var right: Rect2 = (_hud.get_node("Root/TopRight") as Control).get_global_rect()
+	assert_bool(left.intersects(center)).is_false()
+	assert_bool(center.intersects(right)).is_false()
+	assert_bool(left.intersects(right)).is_false()

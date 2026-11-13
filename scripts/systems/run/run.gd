@@ -4,8 +4,8 @@ extends Node2D
 ## the only script that calls setup methods on the modules it composes (R-059).
 
 @export var config: RunConfig
-## Pauses the tree when the run ends. Tests turn it off.
-@export var pause_tree_on_end: bool = true
+## Pauses the tree when the run is paused or ends. Tests turn it off.
+@export var pauses_tree: bool = true
 
 ## True once the player has died this run.
 var died: bool = false
@@ -33,6 +33,8 @@ func _ready() -> void:
 	Events.score_changed.connect(_on_score_changed)
 	Events.combo_changed.connect(_on_combo_changed)
 	Events.run_restart_requested.connect(restart)
+	Events.run_pause_requested.connect(set_paused)
+	Events.title_requested.connect(go_to_title)
 	machine.transition_to(&"Starting")
 
 
@@ -47,10 +49,30 @@ func build_result() -> RunResult:
 	return result
 
 
+## Pauses or resumes the run. Pausing only works while the run is starting or running. Pauses the
+## tree when `pauses_tree` is on, and announces the change on `run_paused`.
+func set_paused(value: bool) -> void:
+	if value == Game.paused:
+		return
+	if value and Game.phase != Game.Phase.STARTING and Game.phase != Game.Phase.RUNNING:
+		return
+	Game.paused = value
+	if pauses_tree:
+		get_tree().paused = value
+	Events.run_paused.emit(value)
+
+
 ## Unpauses and reloads the run scene. Every module starts fresh.
 func restart() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+## Resets the game state and goes back to the title.
+func go_to_title() -> void:
+	Game.reset()
+	get_tree().paused = false
+	Scenes.change(get_tree(), Scenes.TITLE)
 
 
 func _on_player_died() -> void:
