@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1_cfg")
-font_path = "res://art/fonts/font_main.ttf"
-font_size = 8
+font_path = "res://art/fonts/8-bit-hud.ttf"
+font_size = 5
 text_color = Color(1, 1, 1, 1)
 highlight_color = Color(1, 0.85, 0.3, 1)
 dim_color = Color(0.6, 0.6, 0.6, 1)

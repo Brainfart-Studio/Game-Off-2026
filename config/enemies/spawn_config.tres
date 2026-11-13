@@ -9,8 +9,8 @@
 script = ExtResource("2_def")
 id = &"fx_spawn_telegraph"
 path = "res://art/fx/fx_spawn_telegraph.png"
-frame_size = Vector2i(32, 32)
-frames = 6
+frame_size = Vector2i(24, 24)
+frames = 5
 fps = 12.0
 loop = true
 
