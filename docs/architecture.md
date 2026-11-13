@@ -9,8 +9,8 @@ res://
   scripts/
     core/        shared code: Events, Stats helpers, AssetLoader, Layers, Display, Groups, World
     systems/     one folder per module: player, enemies, shift, camera, arena, input, debug, run, audio
-    ui/          screens and widgets: results, initials entry, high score list, theme
-  scenes/        main.tscn and one scene folder per module
+    ui/          screens and widgets: title, menu stack and pages, results, initials entry, high score list, theme
+  scenes/        title.tscn, run.tscn, and one scene folder per module
   config/        .tres config resources (all tuning)
   art/           Loten
   audio/         sfx: Keltfire, music: Brainfart
@@ -87,7 +87,7 @@ Enemies live in `scripts/systems/enemies/`. `enemy_base.tscn` is the shared scen
 
 ## ActorSprite
 
-`ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
+`ActorSprite` (`scripts/core/actor_sprite.gd`) is the sprite of a character. `build(defs)` makes its frames and its own flash material. `play_id(id)` plays an animation and sets `offset` from the first frame's size, so the feet stay at the node origin for any frame size, shifted by the animation's `draw_offset` (for frames where the character is not at the bottom edge), then moves the asset label to the offset. `flash(color, duration)` blends the sprite to a color and back. The flash shader multiplies by the sprite's modulate, so the invulnerability blink on the parent still works. `SpriteFlashEffect` calls `flash` on the owner. Enemies use the same class.
 
 In the editor, `ActorSprite` draws the first frame of `preview_animation` from the config at `preview_config` (or its labeled box), so each character shows in its scene. The preview is only drawn, never saved into the scene.
 
@@ -112,20 +112,53 @@ These are classes with static functions, not autoloads.
 | `Display` | View size from project settings. Scripts never hard-code the resolution |
 | `Groups` | Node group names, used for lookups |
 | `Actions` | Input action names. Scripts never use action strings or raw keys |
-| `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline), once per config |
+| `UiTheme` | Builds the shared UI `Theme` from `UiConfig` (font, colors, focus outline, panel box, compact buttons), once per config |
+| `InputRebinder` | Rebinds one key and one gamepad button per action, with labels and glyph paths for the controls screen |
 | `EventRouter` | Connects config-driven event keys to one handler and finds the binding for an emitted event |
 
 ## Save
 
 `Save` (autoload, `scripts/core/save.gd`) keeps the top 10 high scores and the last initials in `user://save.cfg` (a browser reload keeps it on the web build). It loads in `_ready`. `qualifies(score)` says whether a score makes the table, and `add_high_score(initials, score)` inserts it, saves, and returns its rank. An equal score ranks below the existing one.
 
+## Settings
+
+`Settings` (autoload, `scripts/core/settings.gd`, between `Game` and `Audio`) keeps the player settings in `user://settings.cfg`: three volumes in steps of 0 to 10 (`Master`, `Music`, `SFX`) and the shake and flash toggles. The autoload order is `Events`, `Game`, `Settings`, `Audio`, `Feedback`, `Save`, so it is ready before `Feedback` reads it. A missing or unreadable file gives the defaults (10, 10, 10, on, on).
+
+Every change saves at once and emits `settings_changed`. `set_volume(bus, steps)` clamps the steps and sets the bus volume (`volume_db`: 0 is muted, 10 is 0 dB). The `UI` bus sends into `SFX`, so the `SFX` volume scales menu sounds too. `Feedback` copies the two toggles on `_ready` and on every `settings_changed`.
+
+## Input
+
+Only `jump`, `attack`, `shift`, and `pause` are rebindable (`InputRebinder.REBINDABLE`), one key and one gamepad button each. Movement, the menu actions, and the debug overlay are fixed. `InputRebinder.rebind` replaces the action's events of that device. If another rebindable action already uses the new input on that device, it loses it and, when that leaves it with none, takes the old input of the rebound action. Joypad motion events are never touched.
+
+Bindings are saved in the `input` section of `user://settings.cfg` as `<action>.<keyboard|gamepad>` keys holding arrays of key or button codes (`InputRebinder.snapshot`). `Settings.apply` restores them over the `project.godot` defaults, and an empty `input_bindings` means the defaults. `Settings.save_input_bindings` and `reset_input_bindings` save and emit `settings_changed`.
+
+`ui_accept` (Enter, Kp Enter, Space, gamepad A) and `ui_cancel` (Escape, gamepad B) are defined in `project.godot`, so every menu works with the gamepad alone.
+
 ## UI
 
-UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script.
+UI scripts are in `scripts/ui/`, scenes in `scenes/ui/`. The look comes from `UiConfig` and `UiTheme`: a screen sets `theme = UiTheme.build(config)` on its root control. All text a screen shows is in consts at the top of its script. A screen centers a `PanelContainer` in a `CenterContainer`; the theme draws the panel (9-slice, `panel_margin` border and inner space) and gives buttons compact margins. The game view is 320x180.
 
-`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows the run's numbers. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
+`Results` (a `CanvasLayer`, layer 20, process mode always so it works while the tree is paused) waits for `run_ended`. It shows a centered panel in two columns: the run's numbers and `InitialsEntry` on the left, `HighScoreList` on the right, `Restart` and `Title` below. A score that qualifies shows `InitialsEntry`, then `HighScoreList` with the new row marked. Otherwise it shows the list at once. `Restart` emits `run_restart_requested`.
 
 `HUD` (a `CanvasLayer`, layer 10) shows the run in progress: health pips, timer, world name, score, combo bar with the multiplier, and currency. It reads events only and never polls: `player_health_changed`, `time_changed`, `time_warning`, `run_started`, `world_shifted`, `score_changed`, `combo_changed`, and `wallet_changed`. Each widget is set by its event, and the modules announce their starting values on `run_started`, so the HUD needs no direct reference to any of them. The pips are rebuilt whenever the max health changes.
+
+## Scene flow
+
+`title.tscn` is the main scene (`run/main_scene`). Play changes to `run.tscn`. When the run ends, `Results` offers Restart (reload the run scene) and Title. `Title` on `Results` emits `title_requested`, and `Run.go_to_title` resets `Game`, unpauses the tree, and changes to the title.
+
+`Scenes` (`scripts/core/scenes.gd`) holds the two scene paths (`TITLE`, `RUN`) and `Scenes.change(tree, path)`, the one way to change scene: it records `last_request`, unpauses, and changes scene. Tests set `Scenes.changes_enabled = false` so the request is recorded and nothing changes.
+
+`Title` emits `title_opened` on `_ready`, and `Audio` plays the title music (`music_title.ogg`) on it.
+
+## Menus
+
+`MenuStack` (`scripts/ui/menu_stack.gd`) holds `MenuPage` children, one visible at a time. `push_named` and `push` open a page, `back` returns to the one below with its focused control restored, and `ui_cancel` calls `back`. At the root `back` does nothing unless `can_close_root` is on, which then closes the stack and emits `emptied` (the pause menu uses it). `MenuStack` plays `ui_move` when focus moves inside the current page, and `ui_back` on back. A `MenuPage` has a `first_focus` control, plays `ui_confirm` for every button press in it, and has `opened()` for refreshing its content. Pages ask the stack with `push_requested` and `back_requested`.
+
+`Title` (`scenes/title.tscn`, `scripts/ui/title.gd`) is a `MenuStack` with the pages `Main` (Play, High Scores, Options, Credits), `HighScores` (the saved table), `Credits`, and the two shared pages `Options` and `Controls`. The logo shows only on `Main`; while `ui_title_logo` is missing the game name shows as text.
+
+`OptionsPage` (`scenes/ui/options_page.tscn`) edits `Settings`: three `OptionStepper` volumes, two `OptionToggle` switches (screen shake and flash), a Controls button that pushes the `Controls` page, Reset to defaults, and Back. `opened()` reads every value from `Settings`, so the page always shows the saved state. `OptionStepper` is a button that shows `LABEL  < value >` and takes `ui_left` and `ui_right` itself (`accept_event`), so focus stays on it while the value changes. `OptionToggle` is a toggle button that shows `LABEL  ON` or `LABEL  OFF`; `set_on` sets it without emitting.
+
+`ControlsPage` (`scenes/ui/controls_page.tscn`) has one row per rebindable action with a keyboard and a gamepad `BindingButton`. A gamepad cell shows the button glyph when its image exists and the button name otherwise. Pressing a cell listens for the next input for `LISTEN_TIME` (5 s). A key or button of the cell's device rebinds through `InputRebinder.rebind`, saves with `Settings.save_input_bindings`, and refreshes every row. An input of the other device, or the timeout, cancels without a change. While listening the page handles every key and button event, so the press that confirms a cell is never read as the new binding (buttons fire on release). Reset restores the `project.godot` defaults. The pause menu instances both pages.
 
 ## Missing assets
 
@@ -141,7 +174,7 @@ In the editor: the floor is saved in `Collision` (paint it there), each `TileSki
 
 ## Run setup order
 
-`Run` (`scripts/systems/run/run.gd`) is the root of `main.tscn` and the composition root of the run scene. Its `_ready` runs after every child is ready. It is the only script that calls setup methods on the modules it composes. Modules do their own work in `_ready` but never depend on a sibling being set up.
+`Run` (`scripts/systems/run/run.gd`) is the root of `run.tscn` and the composition root of the run scene. Its `_ready` runs after every child is ready. It is the only script that calls setup methods on the modules it composes. Modules do their own work in `_ready` but never depend on a sibling being set up.
 
 1. `Game.reset()`
 2. `Arena.setup()`: fills the default floor if `Collision` is empty, hides `Collision`, builds both skins, builds the walls and emits `arena_bounds_changed`, registers both `Content` nodes with `Game`
@@ -157,11 +190,15 @@ Listeners are connected in `_ready`, so they all exist before the first signal f
 
 - `Starting`: emits `run_started` and `time_changed`, waits `start_delay` (or leaves at once if the player already died), then `Running`.
 - `Running`: lowers `Game.time_left` each frame, emits `time_changed` when the whole seconds change and `time_warning` for the last `warning_time` seconds, and goes to `Ended` at 0. After `player_died` the timer stops and `Ended` follows after `death_delay`.
-- `Ended`: pauses the tree (unless `Run.pause_tree_on_end` is off, for tests) and emits `run_ended` with a `RunResult`.
+- `Ended`: pauses the tree (unless `Run.pauses_tree` is off, for tests) and emits `run_ended` with a `RunResult`.
+
+Pause is a flag, not a state. `Game.paused` is written only by `Run.set_paused`, which answers `run_pause_requested(paused)`. It only pauses while `Game.phase` is `Starting` or `Running`, ignores a request that matches the current value, pauses the tree when `Run.pauses_tree` is on (tests turn it off), and emits `run_paused(paused)`. `Starting` and `Running` return at once from `update` while `Game.paused`, and `Game.is_combat_live()` is false. Music and SFX keep playing.
+
+`PauseMenu` (a `CanvasLayer`, layer 60, process mode always) only requests pausing; `Run` owns the state. The pause action pauses when `can_pause()` (not paused, phase `Starting` or `Running`) and resumes when the menu is shown. Losing window focus while hidden pauses. Its `MenuStack` (`can_close_root`) sees `ui_cancel` before the menu does, so Escape and B go back one page and resume from the root, while Start resumes from any page. Pages: Pause (Resume, Options, Restart, Quit to Title), plus the shared `OptionsPage` and `ControlsPage`. Restart and Quit emit `run_restart_requested` and `title_requested`.
 
 Restart: `run_restart_requested` makes `Run` unpause the tree and reload the scene, so every module starts fresh. `Feedback` resets itself on `run_started` and `run_ended`.
 
-## Main scene
+## Run scene
 
 ```
 Run                  composition root, script run.gd
@@ -180,6 +217,7 @@ Run                  composition root, script run.gd
   Score
   HUD              CanvasLayer, layer 10, reads events only
   Results          CanvasLayer, hidden until run_ended
+  PauseMenu        CanvasLayer, layer 60, hidden until run_paused
   DebugOverlay
   StateMachine     Starting, Running, Ended
 ```

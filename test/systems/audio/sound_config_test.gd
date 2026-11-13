@@ -35,6 +35,10 @@ func test_music_paths_for_both_worlds() -> void:
 	assert_str(_config.music_path(World.Id.COMBAT)).is_equal("res://audio/music/music_combat.ogg")
 
 
+func test_title_music_path() -> void:
+	assert_str(_config.title_music_path()).is_equal("res://audio/music/music_title.ogg")
+
+
 func test_unknown_id_gets_a_cached_default_def() -> void:
 	var def: SoundDef = _config.def_for(&"unknown")
 	assert_str(String(def.id)).is_equal("unknown")

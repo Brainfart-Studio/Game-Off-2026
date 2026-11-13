@@ -35,7 +35,7 @@ If you cloned without it, run `git lfs install --local` and `git lfs pull` in th
 
 Every PR into `bfs/working`, `development`, or `main` runs the `PR checks / check` workflow:
 
-1. Headless import and a 300 frame run of the main scene. Any script or load error fails it.
+1. Headless import, then a 300 frame run of the main scene (the title) and of the run scene. Any script or load error fails it.
 2. The GdUnit4 test suite.
 3. A web export.
 

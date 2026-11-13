@@ -19,6 +19,7 @@ tile_set = ExtResource("2_tileset")
 position = Vector2(48, 232)
 
 [node name="ArenaBounds" type="Node2D" parent="."]
+position = Vector2(0, 90)
 script = ExtResource("7_bounds")
 
 [node name="ArenaWorlds" type="Node" parent="."]

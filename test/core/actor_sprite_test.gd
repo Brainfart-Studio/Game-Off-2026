@@ -42,6 +42,14 @@ func test_tall_frame_is_anchored_at_the_feet() -> void:
 	assert_vector(_sprite.offset).is_equal(Vector2(-16, -64))
 
 
+func test_draw_offset_moves_the_sprite_down() -> void:
+	var def: AnimationDef = _def(&"tall", Vector2i(24, 48))
+	def.draw_offset = Vector2i(0, 12)
+	_sprite.build([def])
+	assert_bool(_sprite.play_id(&"tall")).is_true()
+	assert_vector(_sprite.offset).is_equal(Vector2(-12, -36))
+
+
 func test_label_follows_the_offset_and_shows_on_a_fallback() -> void:
 	_sprite.build([_def(&"wide", Vector2i(64, 32)), _def(&"tall", Vector2i(32, 64))])
 	_sprite.play_id(&"wide")

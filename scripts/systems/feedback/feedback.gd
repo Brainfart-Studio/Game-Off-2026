@@ -9,9 +9,9 @@ extends Node
 
 ## Master switch. Off blocks every effect (tests turn it off for combat physics).
 var enabled: bool = true
-## Off blocks camera shake (set by the P3 settings).
+## Off blocks camera shake. Follows `Settings`; tests may set it directly.
 var shake_enabled: bool = true
-## Off blocks screen flashes (set by the P3 settings).
+## Off blocks screen flashes. Follows `Settings`; tests may set it directly.
 var flash_enabled: bool = true
 ## Camera shake strength, 0 to 1. The offset scales with its square.
 var trauma: float = 0.0
@@ -28,12 +28,19 @@ var _flash_tween: Tween
 
 func _ready() -> void:
 	config.check()
+	_apply_settings()
+	Events.settings_changed.connect(_apply_settings)
 	_noise = FastNoiseLite.new()
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	_last_tick = Time.get_ticks_usec()
 	EventRouter.connect_keys(Events, config.bindings.keys(), _on_event)
 	Events.run_started.connect(reset)
 	Events.run_ended.connect(_on_run_ended)
+
+
+func _apply_settings() -> void:
+	shake_enabled = Settings.shake_enabled
+	flash_enabled = Settings.flash_enabled
 
 
 func _exit_tree() -> void:

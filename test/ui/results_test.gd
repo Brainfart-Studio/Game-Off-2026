@@ -1,10 +1,13 @@
 extends GdUnitTestSuite
 
+const UiLayout = preload("res://test/ui/ui_layout.gd")
+
 const TEST_PATH: String = "user://results_test.cfg"
 const DEFAULT_PATH: String = "user://save.cfg"
 
 var _results: Results
 var _restarts: int = 0
+var _title_requests: int = 0
 
 
 func before_test() -> void:
@@ -12,13 +15,16 @@ func before_test() -> void:
 	Save.path = TEST_PATH
 	Save.load_file()
 	_restarts = 0
+	_title_requests = 0
 	Events.run_restart_requested.connect(_on_restart_requested)
+	Events.title_requested.connect(_on_title_requested)
 	_results = auto_free((load("res://scenes/ui/results.tscn") as PackedScene).instantiate()) as Results
 	scene_runner(_results)
 
 
 func after_test() -> void:
 	Events.run_restart_requested.disconnect(_on_restart_requested)
+	Events.title_requested.disconnect(_on_title_requested)
 	Save.path = DEFAULT_PATH
 	Save.load_file()
 	_remove_file()
@@ -26,6 +32,10 @@ func after_test() -> void:
 
 func _on_restart_requested() -> void:
 	_restarts += 1
+
+
+func _on_title_requested() -> void:
+	_title_requests += 1
 
 
 func _remove_file() -> void:
@@ -106,3 +116,39 @@ func test_restart_emits_the_restart_request() -> void:
 	_end_run(0)
 	(_node("Restart") as Button).pressed.emit()
 	assert_int(_restarts).is_equal(1)
+
+
+func test_title_button_shows_with_restart_and_requests_the_title() -> void:
+	assert_bool(_node("ToTitle").visible).is_false()
+	_end_run(0)
+	assert_bool(_node("ToTitle").visible).is_true()
+	assert_str((_node("ToTitle") as Button).text).is_equal(Results.TO_TITLE)
+	assert_bool(_node("Restart").has_focus()).is_true()
+	var buttons: Node = _node("Restart").get_parent()
+	assert_int(_node("ToTitle").get_index()).is_equal(_node("Restart").get_index() + 1)
+	assert_object(_node("ToTitle").get_parent()).is_same(buttons)
+	(_node("ToTitle") as Button).pressed.emit()
+	assert_int(_title_requests).is_equal(1)
+
+
+func test_title_button_waits_for_the_list_after_initials() -> void:
+	_end_run(500)
+	assert_bool(_node("ToTitle").visible).is_false()
+	(_node("Initials") as InitialsEntry).confirm()
+	assert_bool(_node("ToTitle").visible).is_true()
+
+
+func test_full_results_fit_the_view() -> void:
+	for i: int in range(10):
+		Save.add_high_score("AAA", 100 * (i + 1))
+	_end_run(5000)
+	assert_bool(_node("Initials").visible).is_true()
+	await await_idle_frame()
+	await await_idle_frame()
+	assert_array(UiLayout.outside_view(_results)).is_empty()
+	(_node("Initials") as InitialsEntry).confirm()
+	assert_bool(_node("HighScores").visible).is_true()
+	assert_bool(_node("Restart").visible).is_true()
+	await await_idle_frame()
+	await await_idle_frame()
+	assert_array(UiLayout.outside_view(_results)).is_empty()

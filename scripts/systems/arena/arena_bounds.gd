@@ -5,7 +5,7 @@ extends Node2D
 ## rect other systems (camera) read through `Events.arena_bounds_changed`.
 
 ## Local rect size, measured from this node's position.
-@export var size: Vector2 = Vector2(960, 270):
+@export var size: Vector2 = Vector2(960, 180):
 	set(value):
 		size = value
 		queue_redraw()

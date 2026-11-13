@@ -26,11 +26,16 @@ const PREVIEW_FONT_SIZE: int = 8
 		queue_redraw()
 
 var _tween: Tween
+## Each animation's `draw_offset`, by id.
+var _draw_offsets: Dictionary = {}
 
 
 ## Builds the frames from `defs` and gives the sprite its own flash material.
 func build(defs: Array[AnimationDef]) -> void:
 	sprite_frames = AssetLoader.sprite_frames(defs)
+	_draw_offsets.clear()
+	for def: AnimationDef in defs:
+		_draw_offsets[def.id] = Vector2(def.draw_offset)
 	centered = false
 	var flash_material: ShaderMaterial = ShaderMaterial.new()
 	flash_material.shader = FLASH_SHADER
@@ -38,7 +43,8 @@ func build(defs: Array[AnimationDef]) -> void:
 	material = flash_material
 
 
-## Plays animation `id` with the feet at the origin. False, with a warning, when it is missing.
+## Plays animation `id` with the feet at the origin, moved by its `draw_offset`. False, with a
+## warning, when it is missing.
 func play_id(id: StringName) -> bool:
 	if sprite_frames == null or not sprite_frames.has_animation(id):
 		push_warning("ActorSprite: no animation '%s'" % id)
@@ -46,7 +52,8 @@ func play_id(id: StringName) -> bool:
 	play(id)
 	var texture: Texture2D = sprite_frames.get_frame_texture(id, 0)
 	var size: Vector2 = texture.get_size()
-	offset = Vector2(-floorf(size.x / 2.0), -size.y)
+	var shift: Vector2 = _draw_offsets.get(id, Vector2.ZERO) as Vector2
+	offset = Vector2(-floorf(size.x / 2.0), -size.y) + shift
 	var label: AssetLabel = get_node_or_null(label_path) as AssetLabel
 	if label != null:
 		label.position = offset
@@ -97,7 +104,7 @@ func _draw() -> void:
 	if def == null:
 		return
 	var size: Vector2 = Vector2(def.frame_size)
-	var corner: Vector2 = Vector2(-floorf(size.x / 2.0), -size.y)
+	var corner: Vector2 = Vector2(-floorf(size.x / 2.0), -size.y) + Vector2(def.draw_offset)
 	var strip: Texture2D = AssetLoader.texture(def.path, def.frame_size, String(def.id))
 	draw_texture_rect_region(strip, Rect2(corner, size), Rect2(Vector2.ZERO, size))
 	if AssetLoader.is_fallback(strip):
